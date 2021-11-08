@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <shortcut-->
+<!--        android:shortcutId="surprise"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/settings"-->
+<!--        android:shortcutShortLabel="@string/shortcuts_name"-->
+<!--        android:shortcutLongLabel="@string/shortcuts_longname"-->
+<!--        android:shortcutDisabledMessage="@string/shortcuts_disabled">-->
+
+<!--        <intent-->
+<!--            android:action="android.intent.action.VIEW"-->
+<!--            android:targetPackage="com.zzh.hfs.plus"-->
+<!--            android:targetClass="com.zzh.hfs.plus.MainActivity" />-->
+<!--    </shortcut>-->
+<!--	<shortcut-->
+<!--        android:shortcutId="surprise2"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/settings"-->
+<!--        android:shortcutShortLabel="@string/shortcuts_name"-->
+<!--        android:shortcutLongLabel="@string/shortcuts_longname"-->
+<!--        android:shortcutDisabledMessage="@string/shortcuts_disabled">-->
+
+<!--        <intent-->
+<!--            android:action="android.intent.action.VIEW"-->
+<!--            android:targetPackage="com.zzh.hfs.plus"-->
+<!--            android:targetClass="com.zzh.hfs.plus.MainActivity" />-->
+<!--    </shortcut>-->
+<!--	<shortcut-->
+<!--        android:shortcutId="surprise3"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/settings"-->
+<!--        android:shortcutShortLabel="@string/shortcuts_name"-->
+<!--        android:shortcutLongLabel="@string/shortcuts_longname"-->
+<!--        android:shortcutDisabledMessage="@string/shortcuts_disabled">-->
+
+<!--        <intent-->
+<!--            android:action="android.intent.action.VIEW"-->
+<!--            android:targetPackage="com.zzh.hfs.plus"-->
+<!--            android:targetClass="com.zzh.hfs.plus.MainActivity" />-->
+<!--    </shortcut>-->
+</shortcuts>

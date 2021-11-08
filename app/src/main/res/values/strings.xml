@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DreamChaser Debugger</string>
+    <string name="tab_text_1">自动模式</string>
+    <string name="tab_text_2">调试模式</string>
+    <string name="rb_text_1">TOP</string>
+    <string name="rb_text_2">MIDDLE</string>
+    <string name="rb_text_3">BOTTOM</string>
+</resources>

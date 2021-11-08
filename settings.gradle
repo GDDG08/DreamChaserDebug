@@ -1,0 +1,2 @@
+rootProject.name = "DreamChaserDebug"
+include ':app'
