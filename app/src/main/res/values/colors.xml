@@ -10,6 +10,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="cyan_400">#FF26C6DA</color>
+    <color name="lightblue_600">#FF039BE5</color>
+    <color name="bluegray_100">#FFCFD8DC</color>
+    <color name="bluegray_400">#FF78909C</color>
+    <color name="bluegray_500">#FF607D8B</color>
+    <color name="bluegray_700">#FF455A64</color>
+    <color name="bluegray_900">#FF263238</color>
     <color name="colorAccent">#F97ABD9A</color>
 
     <color name="splash_background">#272727</color>

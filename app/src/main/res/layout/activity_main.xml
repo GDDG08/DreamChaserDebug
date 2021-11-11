@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bluegray_900"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#009688"
+        android:background="?attr/colorPrimaryVariant"
         android:theme="@style/Theme.DreamChaserDebug.AppBarOverlay">
 
         <TextView
@@ -26,10 +27,11 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#2FC198"
+            android:background="?attr/colorPrimary"
             app:tabIconTint="@color/white"
-            app:tabIndicatorColor="#000009"
-            app:tabTextColor="#FFFFFF" />
+            app:tabIndicatorColor="?attr/colorSecondary"
+            app:tabSelectedTextColor="#FFFFFF"
+            app:tabTextColor="#CDCDCD" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -37,7 +39,7 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </androidx.viewpager.widget.ViewPager>
 
@@ -47,6 +49,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@android:drawable/stat_sys_data_bluetooth" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

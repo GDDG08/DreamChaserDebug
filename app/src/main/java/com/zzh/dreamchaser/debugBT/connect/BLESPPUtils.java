@@ -1,4 +1,4 @@
-package com.zzh.dreamchaser.debugBT;
+package com.zzh.dreamchaser.debugBT.connect;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -28,7 +28,7 @@ import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
  *
  * @author gtf35 gtf@gtf35.top
  */
-class BLESPPUtils {
+public class BLESPPUtils {
     private static boolean mEnableLogOut = false;
     private Context mContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -294,7 +294,7 @@ class BLESPPUtils {
      * @param context           上下文
      * @param onBluetoothAction 蓝牙状态改变回调
      */
-    BLESPPUtils(Context context, OnBluetoothAction onBluetoothAction) {
+    public BLESPPUtils(Context context, OnBluetoothAction onBluetoothAction) {
         mContext = context;
         mOnBluetoothAction = onBluetoothAction;
     }
@@ -302,7 +302,7 @@ class BLESPPUtils {
     /**
      * 初始化
      */
-    void onCreate() {
+    public void onCreate() {
         IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         mContext.registerReceiver(mReceiver, foundFilter);
         IntentFilter finishFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -312,7 +312,7 @@ class BLESPPUtils {
     /**
      * 销毁，释放资源
      */
-    void onDestroy() {
+    public void onDestroy() {
         try {
             logD("onDestroy，开始释放资源");
             mConnectTask.isRunning = false;
@@ -327,7 +327,7 @@ class BLESPPUtils {
     /**
      * 开始搜索
      */
-    void startDiscovery() {
+    public void startDiscovery() {
         if (mBluetoothAdapter.isDiscovering()) mBluetoothAdapter.cancelDiscovery();
         mBluetoothAdapter.startDiscovery();
     }
@@ -337,7 +337,7 @@ class BLESPPUtils {
      *
      * @param device 设备
      */
-    void connect(BluetoothDevice device) {
+    public void connect(BluetoothDevice device) {
         mBluetoothAdapter.cancelDiscovery();
         connect(device.getAddress());
     }
@@ -372,14 +372,14 @@ class BLESPPUtils {
     /**
      * 获取用户是否打开了蓝牙
      */
-    boolean isBluetoothEnable() {
+    public boolean isBluetoothEnable() {
         return mBluetoothAdapter.isEnabled();
     }
 
     /**
      * 开启蓝牙
      */
-    void enableBluetooth() {
+    public void enableBluetooth() {
         mBluetoothAdapter.enable();
     }
 
@@ -387,7 +387,7 @@ class BLESPPUtils {
      * 启用日志输出
      */
     @SuppressWarnings("unused")
-    static void setEnableLogOut() {
+    public static void setEnableLogOut() {
         mEnableLogOut = true;
     }
 

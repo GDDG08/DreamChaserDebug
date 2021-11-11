@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +26,12 @@ import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SVBar;
 import com.zzh.dreamchaser.debugBT.MainActivity;
 import com.zzh.dreamchaser.debugBT.R;
+import com.zzh.dreamchaser.debugBT.data.ContentAdapter;
+import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
+import com.zzh.dreamchaser.debugBT.view.MyListView;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
@@ -51,6 +55,9 @@ public class PlaceholderFragment extends Fragment {
 
     public static int color = Color.parseColor("#ffffffff");
     public static int radiobutton_selected = 2;
+    public static ContentAdapter dAdapter;
+    public static MyListView lvd;
+
 
 //    int color_change_cnt = 0;
 
@@ -83,136 +90,79 @@ public class PlaceholderFragment extends Fragment {
             case Page_Mode_Automatic:
                 binding1 = Fragment1Binding.inflate(inflater, container, false);
                 root = binding1.getRoot();
-                final Button button = binding1.button;
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        SharedPreferences colorInfo = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-                        int color2;
-                        for (int i = 1; i <= 3; i++) {
-                            color2 = colorInfo.getInt("light" + i, Color.parseColor("#ffffffff"));
-                            sendColor(i, color2);
-                        }
-                        BLsend("!");
-                        Toast.makeText(getContext(),"Done!",Toast.LENGTH_LONG).show();
-                    }
-                });
 
                 final Switch switch1 = binding1.switch1;
-                final Switch switch2 = binding1.switch2;
-                final Switch switch3 = binding1.switch3;
 
                 switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 //                        BLsend(isChecked? "{":"}");
                         BLsend(i82Byte(0xff));
+                        getActivity().runOnUiThread(new ContentUpdate());
+                    }
+                });
 
-                    }
-                });
-                switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        BLsend(isChecked? "[":"]");
-                    }
-                });
-                switch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        BLsend(isChecked? "<":">");
-                    }
-                });
+                lvd = binding1.ListViewData;
+                dAdapter = new ContentAdapter(getContext());
+                lvd.setDivider(null);
+                lvd.setAdapter(dAdapter);
+
+//                new ContentUpdate().start();
+
                 break;
             case Page_Mode_Setting:
                 binding2 = Fragment2Binding.inflate(inflater, container, false);
                 root = binding2.getRoot();
 
-                final RadioGroup rg = binding2.RadioGroup;
-                final ColorPicker picker = binding2.picker;
-                final SVBar svBar = binding2.svbar;
-                picker.addSVBar(svBar);
+                final SeekBar seekBar1 = binding2.seekBar1;
+                final SeekBar seekBar2 = binding2.seekBar2;
+                final SeekBar seekBar3 = binding2.seekBar3;
+                final SeekBar seekBar4 = binding2.seekBar4;
 
-//                binding2.radioButton2.setChecked(true);
-                rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                final TextView seekbarText1 = binding2.seekbarText1;
+                final TextView seekbarText2 = binding2.seekbarText2;
+                final TextView seekbarText3 = binding2.seekbarText3;
+                final TextView seekbarText4 = binding2.seekbarText4;
+
+                SeekBar.OnSeekBarChangeListener listener = new SeekBar.OnSeekBarChangeListener() {
                     @Override
-                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        SharedPreferences colorInfo = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-                        switch (checkedId){
-                            case R.id.radioButton1:
-                                radiobutton_selected = 1;
-                                break;
-                            case R.id.radioButton2:
-                                radiobutton_selected = 2;
-                                break;
-                            case R.id.radioButton3:
-                                radiobutton_selected = 3;
-                                break;
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (seekBar == seekBar1){
+                            seekbarText1.setText((float)(progress-500)/2500+"");
+                        }else if (seekBar == seekBar2){
+                            seekbarText2.setText((float)(progress-500)/2500+"");
+                        }else if (seekBar == seekBar3){
+                            seekbarText3.setText((float)(progress-500)/2500+"");
+                        }else if (seekBar == seekBar4){
+                            seekbarText4.setText((float)(progress-500)/2500+"");
                         }
-                        int color = colorInfo.getInt("light"+radiobutton_selected,0);
-                        picker.setOldCenterColor(color);
-                        picker.setColor(color);
-                        sendColor();
-                        RefreshColor(color);
+                        byte[] temp = new byte[17];
+                        temp[0] = (byte) 0xa0;
+                        System.arraycopy(fl2Byte(1+(float)(seekBar1.getProgress()-500)/2500), 0, temp, 1, 4);
+                        System.arraycopy(fl2Byte(1+(float)(seekBar2.getProgress()-500)/2500), 0, temp, 5, 4);
+                        System.arraycopy(fl2Byte(1+(float)(seekBar3.getProgress()-500)/2500), 0, temp, 9, 4);
+                        System.arraycopy(fl2Byte(1+(float)(seekBar4.getProgress()-500)/2500), 0, temp, 13, 4);
+                        BLsend(temp);
+                        Log.d("COMPENSATE:-->",byte2Hex(temp));
                     }
-                });
 
-                picker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
                     @Override
-                    public void onColorChanged(int color0) {
-                        color = svBar.getColor();
-//                        color_change_cnt ++;
-//                        if (color_change_cnt == 1)
-                            sendColor(radiobutton_selected, color);
-//                        else if (color_change_cnt == 2)
-//                            color_change_cnt = 0;
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
 
-                        RefreshColor(color);
-                    }
-                });
-                picker.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
                     @Override
-                    public void onColorSelected(int color0) {
-                        //保存
-                        SharedPreferences colorInfo = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-                        SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
-                        editor.putInt("light"+radiobutton_selected, color);
-                        editor.commit();
+                    public void onStopTrackingTouch(SeekBar seekBar) {
                     }
-                });
-                final Button button2 = binding2.button2;
-                button2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        MainActivity.initColors(getActivity());
-                        Toast.makeText(getContext(),"Done!",Toast.LENGTH_LONG).show();
-                    }
-                });
+                };
+                seekBar1.setOnSeekBarChangeListener(listener);
+                seekBar2.setOnSeekBarChangeListener(listener);
+                seekBar3.setOnSeekBarChangeListener(listener);
+                seekBar4.setOnSeekBarChangeListener(listener);
                 break;
             default:
                 break;
         }
         return root;
-    }
-
-    private void RefreshColor(int color) {
-        int r,g,b;
-        r = (color & 0x00ff0000) >> 16;
-        g = (color & 0x0000ff00) >> 8;
-        b = (color & 0x000000ff) >> 0;
-
-        binding2.textView1.setText(r+"");
-        binding2.textView2.setText(g+"");
-        binding2.textView3.setText(b+"");
-    }
-
-    public static void sendColor() {
-        sendColor(radiobutton_selected, color);
-    }
-
-    public static void sendColor(int index, int color){
-//        Log.d("Dedddddd", Integer.toHexString(color));
-        String cmd = "#" + index + "&" + Integer.toHexString(color).substring(2) + "@";
-        BLsend(cmd);
     }
 
     @Override

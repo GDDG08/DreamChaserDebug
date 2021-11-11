@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.appcompat.app.AlertDialog;
@@ -28,15 +27,20 @@ import android.widget.Toast;
 
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
+import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
+import com.zzh.dreamchaser.debugBT.connect.ConnectLock;
 import com.zzh.dreamchaser.debugBT.data.Content;
+import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 import com.zzh.dreamchaser.debugBT.ui.main.SectionsPagerAdapter;
 import com.zzh.dreamchaser.debugBT.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
-public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBluetoothAction{
+public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBluetoothAction {
 
     @SuppressLint("StaticFieldLeak")
     public static BLESPPUtils mBLESPPUtils;
@@ -67,12 +71,10 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                 //Toast.makeText(MainActivity.this,tab.getPosition()+"",Toast.LENGTH_LONG).show();
                 switch (tab.getPosition()) {
                     case PlaceholderFragment.Page_Mode_Automatic - 1:
-                        MainActivity.BLsend("!");
                         break;
                     case PlaceholderFragment.Page_Mode_Setting - 1:
-                        PlaceholderFragment.sendColor();
-                        if(first_flag) {
-                            PlaceholderFragment.binding2.radioButton2.setChecked(true);
+                        if (first_flag) {
+//                            PlaceholderFragment.binding2.radioButton2.setChecked(true);
                             first_flag = false;
                         }
                         break;
@@ -80,10 +82,12 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
         FloatingActionButton fab = binding.fab;
         fab.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         if (!mBLESPPUtils.isBluetoothEnable()) mBLESPPUtils.enableBluetooth();
         mBLESPPUtils.onCreate();
         mDeviceDialogCtrl = new DeviceDialogCtrl(this);
+
+
+
     }
 
     @Override
@@ -120,32 +127,35 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                     new String[]{
                             "android.permission.ACCESS_FINE_LOCATION",
                             "android.permission.ACCESS_COARSE_LOCATION",
-                            "android.permission.ACCESS_WIFI_STATE"},
+                            "android.permission.ACCESS_WIFI_STATE",
+                            "android.permission.WRITE_EXTERNAL_STORAGE"
+                    },
                     1
             );
         }
     }
-    public static void initColors(Context mContext){
+
+    public static void initColors(Context mContext) {
         SharedPreferences colorInfo = mContext.getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-        if (!colorInfo.getBoolean("Init", false)){
+        if (!colorInfo.getBoolean("Init", false)) {
             SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
-            for(int i=0;i<3;i++){
-                int def = Color.rgb(0,0,0);
-                switch (i){
+            for (int i = 0; i < 3; i++) {
+                int def = Color.rgb(0, 0, 0);
+                switch (i) {
                     case 3:
-                        def = Color.rgb(100,0,0);
+                        def = Color.rgb(100, 0, 0);
                         break;
                     case 2:
-                        def = Color.rgb(50,50,0);
+                        def = Color.rgb(50, 50, 0);
                         break;
                     case 1:
-                        def = Color.rgb(0,100,0);
+                        def = Color.rgb(0, 100, 0);
                         break;
                 }
-                editor.putInt("light"+i, def);
+                editor.putInt("light" + i, def);
             }
             editor.putBoolean("Init", true);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -153,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     public void onFoundDevice(BluetoothDevice device) {
 
 //        Toast.makeText(MainActivity.this, device.getName(),Toast.LENGTH_LONG).show();
-        if (device.getName()==null||!device.getName().contains("RoboMaster"))
+        if (device.getName() == null || !device.getName().contains("RoboMaster"))
             return;
         // 判断是不是重复的
         for (int i = 0; i < mDevicesList.size(); i++) {
@@ -183,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 //                mLogTv.setText(
 //                        mLogTv.getText() + "\n连接成功:" + device.getName() + " | " + device.getAddress()
 //                );
+                ConnectLock.HandShake.start();
                 mDeviceDialogCtrl.dismiss();
             }
         });
@@ -196,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     int count = 0;
     boolean first_rec = true;
     boolean onLogging = false;
+
     @Override
     public void onReceiveBytes(byte[] bytes) {
         if (first_rec) {
@@ -204,30 +216,41 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         }
 
 //        Log.e("BLE","Receiving----->"+new String(bytes)+"");
-        Log.e("BLE","Receiving----->"+count+++"--"+byte2Hex(bytes)+"");
-        switch (bytes[0]){
-            case (byte)0xff:
+        Log.e("BLE", "Receiving----->" + count++ + "--" + byte2Hex(bytes) + "");
+        switch (bytes[0]) {
+            case (byte) 0xff:
 //                delete(mContent);
+                ConnectLock.HandShake.stop();
+//                Toast.makeText(MainActivity.this,"握手成功",Toast.LENGTH_LONG).show();
                 mContent = new Content();
                 mContent.CreatContent(bytes);
                 onLogging = true;
+                BLsend(i82Byte(0xf1));
                 break;
-            case (byte)0x01:
-            case (byte)0x02:
-            case (byte)0x03:
-                if (onLogging)
+            case (byte) 0x01:
+            case (byte) 0x02:
+            case (byte) 0x03:
+                if (onLogging) {
                     mContent.Update(bytes);
+                    MainActivity.onDataUpdate();
+                    runOnUiThread(new ContentUpdate());
+                }
                 break;
         }
     }
 
-    @Override
-    public void onSendBytes(byte[] bytes) {
-        Log.e("BLE","Sending----->"+byte2Hex(bytes));
+    private static void onDataUpdate() {
+        PlaceholderFragment.dAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onFinishFoundDevice() {}
+    public void onSendBytes(byte[] bytes) {
+        Log.e("BLE", "Sending----->" + byte2Hex(bytes));
+    }
+
+    @Override
+    public void onFinishFoundDevice() {
+    }
 
     /**
      * 设备选择对话框控制
@@ -271,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                     .create();
             mConnectDeviceDialog.setTitle("选择RoboMaster调试器");
             mConnectDeviceDialog.setView(scrollView);
-            mConnectDeviceDialog.setCancelable(false);
+            mConnectDeviceDialog.setCancelable(true);
         }
 
         /**
@@ -281,30 +304,21 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             mBLESPPUtils.startDiscovery();
 
             mConnectDeviceDialog.show();
-            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    mConnectDeviceDialog.dismiss();
-                    return false;
-                }
+            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnLongClickListener(v -> {
+                mConnectDeviceDialog.dismiss();
+                return false;
             });
-            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mConnectDeviceDialog.dismiss();
-                    finish();
-                }
+            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                mConnectDeviceDialog.dismiss();
+                finish();
             });
-            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mDialogRootView.removeAllViews();
+            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
+                mDialogRootView.removeAllViews();
 //                    mProgressBar.setProgress(50,true);
-                    mProgressBar.setIndeterminate(true);
-                    mDialogRootView.addView(mProgressBar);
-                    mDevicesList.clear();
-                    mBLESPPUtils.startDiscovery();
-                }
+                mProgressBar.setIndeterminate(true);
+                mDialogRootView.addView(mProgressBar);
+                mDevicesList.clear();
+                mBLESPPUtils.startDiscovery();
             });
         }
 
@@ -317,56 +331,53 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
         /**
          * 添加一个设备到列表
-         * @param device 设备
+         *
+         * @param device          设备
          * @param onClickListener 点击回调
          */
         private void addDevice(final BluetoothDevice device, final View.OnClickListener onClickListener) {
-            runOnUiThread(new Runnable() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void run() {
-                    TextView devTag = new TextView(MainActivity.this);
-                    devTag.setClickable(true);
-                    devTag.setPadding(20,20,20,20);
-                    devTag.setBackgroundResource(R.drawable.rect_round_button_ripple);
-                    devTag.setText(device.getName() + "\nMAC:" + device.getAddress());
-                    devTag.setTextColor(Color.WHITE);
-                    devTag.setOnClickListener(onClickListener);
-                    devTag.setTag(device);
-                    devTag.setLayoutParams(
-                            new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                            )
-                    );
-                    ((LinearLayout.LayoutParams) devTag.getLayoutParams()).setMargins(
-                            20, 20, 20, 20);
-                    mDialogRootView.addView(devTag);
-                }
+            runOnUiThread(() -> {
+                TextView devTag = new TextView(MainActivity.this);
+                devTag.setClickable(true);
+                devTag.setPadding(20, 20, 20, 20);
+                devTag.setBackgroundResource(R.drawable.rect_round_button_ripple);
+                devTag.setText(device.getName() + "\nMAC:" + device.getAddress());
+                devTag.setTextColor(Color.WHITE);
+                devTag.setOnClickListener(onClickListener);
+                devTag.setTag(device);
+                devTag.setLayoutParams(
+                        new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                );
+                ((LinearLayout.LayoutParams) devTag.getLayoutParams()).setMargins(
+                        20, 20, 20, 20);
+                mDialogRootView.addView(devTag);
             });
         }
     }
+
     private void postShowToast(final String msg) {
         postShowToast(msg, null);
     }
 
     private void postShowToast(final String msg, final DoSthAfterPost doSthAfterPost) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                if (doSthAfterPost != null) doSthAfterPost.doIt();
-            }
+        runOnUiThread(() -> {
+            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            if (doSthAfterPost != null) doSthAfterPost.doIt();
         });
     }
 
     private interface DoSthAfterPost {
         void doIt();
     }
-    public static void BLsend(String str){
+
+    public static void BLsend(String str) {
         mBLESPPUtils.send(str.getBytes());
     }
-    public static void BLsend(byte[] b){
+
+    public static void BLsend(byte[] b) {
         mBLESPPUtils.send(b);
     }
 }

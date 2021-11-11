@@ -60,15 +60,15 @@ public class byteCov {
 
     public static byte[] i162Byte(int i) {
         byte[] result = new byte[2];
-        result[0] = (byte) ((i >> 8) & 0xFF);
-        result[1] = (byte) (i & 0xFF);
+        result[1] = (byte) ((i >> 8) & 0xFF);
+        result[0] = (byte) (i & 0xFF);
         return result;
     }
 
     public static int byte2i16(byte[] bytes) {
         int value = 0;
         for (int i = 0; i < 2; i++) {
-            int shift = (1 - i) * 8;
+            int shift = i * 8;
             value += (bytes[i] & 0xFF) << shift;
         }
         return value;
@@ -76,17 +76,17 @@ public class byteCov {
 
     public static byte[] i322Byte(int i) {
         byte[] result = new byte[4];
-        result[0] = (byte) ((i >> 24) & 0xFF);
-        result[1] = (byte) ((i >> 16) & 0xFF);
-        result[2] = (byte) ((i >> 8) & 0xFF);
-        result[3] = (byte) (i & 0xFF);
+        result[3] = (byte) ((i >> 24) & 0xFF);
+        result[2] = (byte) ((i >> 16) & 0xFF);
+        result[1] = (byte) ((i >> 8) & 0xFF);
+        result[0] = (byte) (i & 0xFF);
         return result;
     }
 
     public static int byte2i32(byte[] bytes) {
         int value = 0;
         for (int i = 0; i < 4; i++) {
-            int shift = (3 - i) * 8;
+            int shift = i * 8;
             value += (bytes[i] & 0xFF) << shift;
         }
         return value;

@@ -10,9 +10,9 @@ import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
 public class Content {
     public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char"};
-    public ArrayList tagList = new ArrayList();
-    public ArrayList list = new ArrayList();
-    public int dataLen = 0;
+    public static ArrayList tagList = new ArrayList();
+    public static ArrayList list = new ArrayList();
+    public static int dataLen = 0;
 
     public void CreatContent(byte[] data) {
         int num = (data.length - 1) / 20;
