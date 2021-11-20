@@ -13,30 +13,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
             android:orientation="vertical">
 
 
-            <LinearLayout
-                android:id="@+id/linearLayout2"
+            <Switch
+                android:id="@+id/switch1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="35dp"
+                android:layout_weight="1"
+                android:text="日志记录"
+                android:textColor="@color/bluegray_100"
+                android:textSize="16sp" />
 
-                <Switch
-                    android:id="@+id/switch1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:layout_weight="1"
-                    android:text="Top"
-                    android:textSize="24sp" />
-
-            </LinearLayout>
-
-            <SurfaceView
-                android:id="@+id/surfaceView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/textView_fps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:text="FPS"
+                android:textColor="@color/white" />
 
             <com.zzh.dreamchaser.debugBT.view.MyListView
                 android:id="@+id/ListView_Data"
@@ -45,12 +43,6 @@
                 android:layout_marginHorizontal="20dp">
 
             </com.zzh.dreamchaser.debugBT.view.MyListView>
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
 
 
         </LinearLayout>

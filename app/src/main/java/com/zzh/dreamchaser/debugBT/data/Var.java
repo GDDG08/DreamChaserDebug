@@ -47,7 +47,9 @@ public class Var {
             case 0:
                 return byte2Hex(data);
             case 1:
+                return byte2i8(data)+"";
             case 2:
+                return byte2i16(data)+"";
             case 3:
                 return byte2i32(data)+"";
             case 4:

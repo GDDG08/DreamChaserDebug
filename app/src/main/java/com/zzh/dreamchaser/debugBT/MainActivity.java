@@ -1,10 +1,13 @@
 package com.zzh.dreamchaser.debugBT;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -16,6 +19,9 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -26,16 +32,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
+import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.dAdapter;
+import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.lvd;
+import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.switch1;
+import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.textView_fps;
 
 import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
 import com.zzh.dreamchaser.debugBT.connect.ConnectLock;
 import com.zzh.dreamchaser.debugBT.data.Content;
 import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
+import com.zzh.dreamchaser.debugBT.data.Logger;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 import com.zzh.dreamchaser.debugBT.ui.main.SectionsPagerAdapter;
 import com.zzh.dreamchaser.debugBT.databinding.ActivityMainBinding;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,6 +68,34 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     public static final String PREFS_NAME = "com.zzh.dreamchaser.debugBT.color";
 
     public Content mContent;
+    public ContentUpdate mContentupdate = new ContentUpdate();
+    private static final int UPDATE = 0;
+
+    public static Logger mLogger;
+
+    static {
+        mLogger = new Logger();
+    }
+//    private TimerTask refresh_task = new TimerTask() {
+//        @Override
+//        public void run() {
+//            runOnUiThread(()->{
+//                dAdapter.notifyDataSetChanged();
+//                lvd.postInvalidate();
+//            });
+//        }
+//
+//    };
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == UPDATE) {
+                MainActivity.onDataUpdate();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +115,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             public void onTabSelected(TabLayout.Tab tab) {
                 //Toast.makeText(MainActivity.this,tab.getPosition()+"",Toast.LENGTH_LONG).show();
                 switch (tab.getPosition()) {
-                    case PlaceholderFragment.Page_Mode_Automatic - 1:
+                    case PlaceholderFragment.Page_Info - 1:
                         break;
-                    case PlaceholderFragment.Page_Mode_Setting - 1:
+                    case PlaceholderFragment.Page_Tools - 1:
                         if (first_flag) {
 //                            PlaceholderFragment.binding2.radioButton2.setChecked(true);
                             first_flag = false;
@@ -110,14 +155,14 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         mBLESPPUtils.onCreate();
         mDeviceDialogCtrl = new DeviceDialogCtrl(this);
 
-
-
+//        ContentUpdate.start_tim(refresh_task);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mBLESPPUtils.onDestroy();
+        mLogger.stop();
     }
 
     private void initPermissions() {
@@ -225,6 +270,8 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                 mContent = new Content();
                 mContent.CreatContent(bytes);
                 onLogging = true;
+//                ContentUpdate.start_tim(refresh_task);
+                mLogger.writeHeader();
                 BLsend(i82Byte(0xf1));
                 break;
             case (byte) 0x01:
@@ -232,15 +279,30 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             case (byte) 0x03:
                 if (onLogging) {
                     mContent.Update(bytes);
-                    MainActivity.onDataUpdate();
-                    runOnUiThread(new ContentUpdate());
+                    mLogger.runOnCall();
+                    Message msg = new Message();
+                    msg.what = UPDATE;
+                    handler.sendMessage(msg);
+//                    runOnUiThread(new ContentUpdate());
                 }
                 break;
         }
     }
 
+    private static long time_fps = new Date().getTime();
+    private static int count_fps = 0;
+
     private static void onDataUpdate() {
-        PlaceholderFragment.dAdapter.notifyDataSetChanged();
+        count_fps++;
+        if (count_fps > 100) {
+            long time_now = new Date().getTime();
+            textView_fps.setText((float) 1000 * count_fps / (time_now - time_fps) + "");
+            count_fps = 0;
+            time_fps = time_now;
+        }
+
+        dAdapter.notifyDataSetChanged();
+        lvd.postInvalidate();
     }
 
     @Override
@@ -250,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onFinishFoundDevice() {
+        Toast.makeText(this, "搜索已暂停", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -379,5 +442,23 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     public static void BLsend(byte[] b) {
         mBLESPPUtils.send(b);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
+                Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+                mLogger.file = uri.toString();
+
+                mLogger.start(this);
+                Toast.makeText(this, mLogger.file.toString(), Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor info_edit = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE).edit();
+                info_edit.putString("LogFile", mLogger.file.toString());
+                info_edit.apply();
+                switch1.setChecked(true);
+            }
+        }
     }
 }

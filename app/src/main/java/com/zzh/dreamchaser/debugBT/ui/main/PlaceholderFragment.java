@@ -22,12 +22,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.larswerkman.holocolorpicker.ColorPicker;
-import com.larswerkman.holocolorpicker.SVBar;
 import com.zzh.dreamchaser.debugBT.MainActivity;
-import com.zzh.dreamchaser.debugBT.R;
 import com.zzh.dreamchaser.debugBT.data.ContentAdapter;
 import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
+import com.zzh.dreamchaser.debugBT.data.Logger;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
@@ -35,6 +33,7 @@ import com.zzh.dreamchaser.debugBT.view.MyListView;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
+import static com.zzh.dreamchaser.debugBT.MainActivity.mLogger;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
 /**
@@ -50,14 +49,14 @@ public class PlaceholderFragment extends Fragment {
     private Fragment1Binding binding1;
     public static Fragment2Binding binding2;
 
-    public static final int Page_Mode_Automatic = 1;
-    public static final int Page_Mode_Setting = 2;
+    public static final int Page_Info = 1;
+    public static final int Page_Tools = 2;
 
-    public static int color = Color.parseColor("#ffffffff");
     public static int radiobutton_selected = 2;
     public static ContentAdapter dAdapter;
     public static MyListView lvd;
-
+    public static TextView textView_fps;
+    public static Switch switch1;
 
 //    int color_change_cnt = 0;
 
@@ -86,19 +85,26 @@ public class PlaceholderFragment extends Fragment {
             Bundle savedInstanceState) {
         int index = getArguments().getInt(ARG_SECTION_NUMBER);
         View root = null;
-        switch(index){
-            case Page_Mode_Automatic:
+        switch (index) {
+            case Page_Info:
                 binding1 = Fragment1Binding.inflate(inflater, container, false);
                 root = binding1.getRoot();
 
-                final Switch switch1 = binding1.switch1;
+                switch1 = binding1.switch1;
 
                 switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                        BLsend(isChecked? "{":"}");
-                        BLsend(i82Byte(0xff));
-                        getActivity().runOnUiThread(new ContentUpdate());
+                        if (mLogger.onLogging && isChecked)
+                            return;
+                        if (mLogger.file != null) {
+                            if (isChecked)
+                                mLogger.writeHeader();
+                            mLogger.onLogging = isChecked;
+                        }else {
+                            buttonView.setChecked(false);
+                            mLogger.init(getActivity());
+                        }
                     }
                 });
 
@@ -107,10 +113,12 @@ public class PlaceholderFragment extends Fragment {
                 lvd.setDivider(null);
                 lvd.setAdapter(dAdapter);
 
+                textView_fps = binding1.textViewFps;
+
 //                new ContentUpdate().start();
 
                 break;
-            case Page_Mode_Setting:
+            case Page_Tools:
                 binding2 = Fragment2Binding.inflate(inflater, container, false);
                 root = binding2.getRoot();
 
@@ -127,23 +135,23 @@ public class PlaceholderFragment extends Fragment {
                 SeekBar.OnSeekBarChangeListener listener = new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (seekBar == seekBar1){
-                            seekbarText1.setText((float)(progress-500)/2500+"");
-                        }else if (seekBar == seekBar2){
-                            seekbarText2.setText((float)(progress-500)/2500+"");
-                        }else if (seekBar == seekBar3){
-                            seekbarText3.setText((float)(progress-500)/2500+"");
-                        }else if (seekBar == seekBar4){
-                            seekbarText4.setText((float)(progress-500)/2500+"");
+                        if (seekBar == seekBar1) {
+                            seekbarText1.setText((float) (progress - 500) / 2500 + "");
+                        } else if (seekBar == seekBar2) {
+                            seekbarText2.setText((float) (progress - 500) / 2500 + "");
+                        } else if (seekBar == seekBar3) {
+                            seekbarText3.setText((float) (progress - 500) / 2500 + "");
+                        } else if (seekBar == seekBar4) {
+                            seekbarText4.setText((float) (progress - 500) / 2500 + "");
                         }
                         byte[] temp = new byte[17];
                         temp[0] = (byte) 0xa0;
-                        System.arraycopy(fl2Byte(1+(float)(seekBar1.getProgress()-500)/2500), 0, temp, 1, 4);
-                        System.arraycopy(fl2Byte(1+(float)(seekBar2.getProgress()-500)/2500), 0, temp, 5, 4);
-                        System.arraycopy(fl2Byte(1+(float)(seekBar3.getProgress()-500)/2500), 0, temp, 9, 4);
-                        System.arraycopy(fl2Byte(1+(float)(seekBar4.getProgress()-500)/2500), 0, temp, 13, 4);
+                        System.arraycopy(fl2Byte(1 + (float) (seekBar1.getProgress() - 500) / 2500), 0, temp, 1, 4);
+                        System.arraycopy(fl2Byte(1 + (float) (seekBar2.getProgress() - 500) / 2500), 0, temp, 5, 4);
+                        System.arraycopy(fl2Byte(1 + (float) (seekBar3.getProgress() - 500) / 2500), 0, temp, 9, 4);
+                        System.arraycopy(fl2Byte(1 + (float) (seekBar4.getProgress() - 500) / 2500), 0, temp, 13, 4);
                         BLsend(temp);
-                        Log.d("COMPENSATE:-->",byte2Hex(temp));
+                        Log.d("COMPENSATE:-->", byte2Hex(temp));
                     }
 
                     @Override

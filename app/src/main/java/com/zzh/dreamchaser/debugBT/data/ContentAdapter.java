@@ -14,8 +14,8 @@ public class ContentAdapter extends BaseAdapter {
     TextView txt1, txt2;
 
     public int getCount() {
-//        return Content.dataLen;
-        return 3;
+        return Content.dataLen;
+//        return 3;
     }
 
     public Object getItem(int position) {
@@ -28,7 +28,7 @@ public class ContentAdapter extends BaseAdapter {
         return position;
     }
 
-    int temp = 0;
+//    int temp = 0;
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
@@ -42,22 +42,22 @@ public class ContentAdapter extends BaseAdapter {
         if (position % 2 == 0){
             v.setBackgroundColor(0x1FFFFFFF);
         }
-        if (position == 0) {
-            txt1.setText("1");
-            txt2.setText("value"+temp);
-        }
-        else if (position == 1) {
-            txt1.setText("2");
-            txt2.setText("value"+temp);
-        }
-        else {
-            txt1.setText("3");
-            txt2.setText("value"+temp);
-        }
-//        Var data = (Var)Content.list.get(position);
-//        txt1.setText(data.getTag());
-//        txt2.setText(data.getStr());
-        temp++;
+//        if (position == 0) {
+//            txt1.setText("1");
+//            txt2.setText("value"+temp);
+//        }
+//        else if (position == 1) {
+//            txt1.setText("2");
+//            txt2.setText("value"+temp);
+//        }
+//        else {
+//            txt1.setText("3");
+//            txt2.setText("value"+temp);
+//        }
+        Var data = (Var)Content.list.get(position);
+        txt1.setText(data.getTag());
+        txt2.setText(data.getStr());
+//        temp++;
         return v;
     }
 

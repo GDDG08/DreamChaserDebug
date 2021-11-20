@@ -5,10 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
-
-    <TextView
+        <TextView
         android:id="@+id/txt1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,13 +14,14 @@
         android:paddingLeft="20dp"
         android:text="TextView"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/txt2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:gravity="right"
         android:paddingStart="20dp"
         android:paddingLeft="20dp"
         android:text="TextView"
