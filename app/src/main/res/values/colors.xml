@@ -17,6 +17,7 @@
     <color name="bluegray_500">#FF607D8B</color>
     <color name="bluegray_700">#FF455A64</color>
     <color name="bluegray_900">#FF263238</color>
+    <color name="bluegray_1000">#0F191C</color>
     <color name="colorAccent">#F97ABD9A</color>
 
     <color name="splash_background">#272727</color>

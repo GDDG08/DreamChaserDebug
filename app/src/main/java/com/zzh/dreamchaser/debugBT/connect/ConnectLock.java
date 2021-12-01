@@ -32,6 +32,7 @@ public class ConnectLock {
             running = true;
             thread = new Thread(() -> {
                 while (running) {
+                    BLsend(i82Byte(0xf2));
                     BLsend(i82Byte(0xff));
                     try {
                         Thread.sleep(500);

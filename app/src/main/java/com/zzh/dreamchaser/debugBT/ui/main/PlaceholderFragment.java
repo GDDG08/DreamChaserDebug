@@ -30,6 +30,7 @@ import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
+import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
@@ -56,8 +57,9 @@ public class PlaceholderFragment extends Fragment {
     public static ContentAdapter dAdapter;
     public static MyListView lvd;
     public static TextView textView_fps;
+    public static TextView textView_file;
     public static Switch switch1;
-
+    public static Switch switch2;
 //    int color_change_cnt = 0;
 
     public static PlaceholderFragment newInstance(int index) {
@@ -115,8 +117,20 @@ public class PlaceholderFragment extends Fragment {
 
                 textView_fps = binding1.textViewFps;
 
+                textView_file = binding1.textViewFile;
 //                new ContentUpdate().start();
-
+                switch2 = binding1.switch2;
+                switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                        for (int i =0; i<lvd.getCount();i++){
+////                            lvd.getItemAtPosition(i).
+//                        }
+                        dAdapter.onScope = isChecked;
+                        dAdapter.notifyDataSetChanged();
+                        lvd.postInvalidate();
+                    }
+                });
                 break;
             case Page_Tools:
                 binding2 = Fragment2Binding.inflate(inflater, container, false);

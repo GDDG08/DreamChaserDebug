@@ -10,8 +10,8 @@ android {
         applicationId "com.zzh.dreamchaser.debugBT"
         minSdkVersion 28
         targetSdkVersion 30
-        versionCode 21071805
-        versionName "3.0"
+        versionCode 21112801
+        versionName "0.1forLYS"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

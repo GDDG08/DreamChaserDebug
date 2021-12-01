@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,6 +28,26 @@
                 android:textColor="@color/bluegray_100"
                 android:textSize="16sp" />
 
+            <Switch
+                android:id="@+id/switch2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="35dp"
+                android:layout_weight="1"
+                android:text="绘制图形"
+                android:textColor="@color/bluegray_100"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="File Directory"
+                android:textColor="@color/bluegray_100"
+                android:textSize="10sp" />
+
             <TextView
                 android:id="@+id/textView_fps"
                 android:layout_width="wrap_content"
@@ -40,7 +61,8 @@
                 android:id="@+id/ListView_Data"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="20dp">
+                android:layout_marginHorizontal="20dp"
+                android:paddingBottom="20dp">
 
             </com.zzh.dreamchaser.debugBT.view.MyListView>
 
