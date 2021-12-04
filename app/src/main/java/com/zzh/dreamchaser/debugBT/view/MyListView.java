@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ListView;
 
-public class MyListView extends ListView {
+import androidx.recyclerview.widget.RecyclerView;
+
+public class MyListView extends RecyclerView {
 
     public MyListView(Context paramContext) {
         super(paramContext);

@@ -40,7 +40,7 @@ import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.textView_f
 import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
 import com.zzh.dreamchaser.debugBT.connect.ConnectLock;
 import com.zzh.dreamchaser.debugBT.data.Content;
-import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
+//import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 import com.zzh.dreamchaser.debugBT.ui.main.SectionsPagerAdapter;
@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     boolean first_flag = true;
     public static final String PREFS_NAME = "com.zzh.dreamchaser.debugBT.color";
 
-    public Content mContent;
-    public ContentUpdate mContentupdate = new ContentUpdate();
+    public static Content mContent;
+//    public ContentUpdate mContentupdate = new ContentUpdate();
     private static final int UPDATE = 0;
 
     public static Logger mLogger;
@@ -156,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         mDeviceDialogCtrl = new DeviceDialogCtrl(this);
 
 //        ContentUpdate.start_tim(refresh_task);
+        mContent = new Content();
+        mContent.CreatContent_T();
     }
 
     @Override
@@ -292,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     private static long time_fps = new Date().getTime();
     private static int count_fps = 0;
 
-    private static void onDataUpdate() {
+    public static void onDataUpdate() {
         count_fps++;
         if (count_fps > 100) {
             long time_now = new Date().getTime();
@@ -300,9 +302,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             count_fps = 0;
             time_fps = time_now;
         }
+        dAdapter.onUpDate();
 
-        dAdapter.notifyDataSetChanged();
-        lvd.postInvalidate();
+//        lvd.postInvalidate();
     }
 
     @Override

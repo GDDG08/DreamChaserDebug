@@ -25,6 +25,11 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.DreamChaserDebug.NoActionBar"></activity>
+        <activity
+            android:name=".ScopeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.DreamChaserDebug.NoActionBar"></activity>
 
         <activity
             android:name=".SplashActivity"

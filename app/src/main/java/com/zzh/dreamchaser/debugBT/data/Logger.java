@@ -18,10 +18,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 
 public class Logger {
     public boolean onLogging = false;
@@ -64,6 +66,7 @@ public class Logger {
     public void start(Context context) {
         try {
             Uri uri = Uri.parse(file);
+//            Format
             OutputStream os = context.getContentResolver().openOutputStream(uri);
             bw = new BufferedWriter(new OutputStreamWriter(os));
         } catch (IOException e) {
@@ -87,9 +90,9 @@ public class Logger {
     public void runOnCall() {
         if (onLogging) {
             try {
-                for (int i = 0; i < Content.dataLen; i++) {
-                    bw.write(((Var) Content.list.get(i)).getStr() + "");
-                    if (i != Content.dataLen - 1)
+                for (int i = 0; i < mContent.dataLen; i++) {
+                    bw.write(((Var) mContent.list.get(i)).getStr() + "");
+                    if (i != mContent.dataLen - 1)
                         bw.write(",");
                 }
                 bw.write("\r\n");
@@ -102,9 +105,9 @@ public class Logger {
 
     public void writeHeader() {
         try {
-            for (int i = 0; i < Content.dataLen; i++) {
-                bw.write(Content.tagList.get(i) + "");
-                if (i != Content.dataLen - 1)
+            for (int i = 0; i < mContent.dataLen; i++) {
+                bw.write(mContent.tagList.get(i) + "");
+                if (i != mContent.dataLen - 1)
                     bw.write(",");
             }
             bw.write("\r\n");

@@ -96,17 +96,21 @@ public class BLESPPUtils {
                 return null;
             }
 
-            // 尝试连接
-            try {
-                // 等待连接，会阻塞线程
-                bluetoothSocket.connect();
-                logD("连接成功");
-                onBluetoothAction.onConnectSuccess(romoteDevice);
-            } catch (Exception connectException) {
-                connectException.printStackTrace();
-                logD("连接失败:" + connectException.getMessage());
-                onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
-                return null;
+            while(true) {
+                // 尝试连接
+                try {
+                    // 等待连接，会阻塞线程
+                    bluetoothSocket.connect();
+                    logD("连接成功");
+                    onBluetoothAction.onConnectSuccess(romoteDevice);
+                    break;
+                } catch (Exception connectException) {
+                    connectException.printStackTrace();
+                    logD("连接失败:" + connectException.getMessage());
+//                    onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
+                    onBluetoothAction.onConnectFailed("超时，正在重试……");
+//                    return null;
+                }
             }
 
             // 开始监听数据接收
@@ -215,7 +219,7 @@ public class BLESPPUtils {
                 logD("AsyncTask 开始释放资源");
                 isRunning = false;
                 bluetoothSocket.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -349,8 +353,13 @@ public class BLESPPUtils {
      */
     void connect(String deviceMac) {
         if (mConnectTask.getStatus() == AsyncTask.Status.RUNNING && mConnectTask.isRunning) {
-            if (mOnBluetoothAction != null) mOnBluetoothAction.onConnectFailed("有正在连接的任务");
-            return;
+            if (mOnBluetoothAction != null){
+                onDestroy();
+                mConnectTask = new ConnectTask();
+
+            }
+//                mOnBluetoothAction.onConnectFailed("有正在连接的任务");
+//                return;
         }
         mConnectTask.onBluetoothAction = mOnBluetoothAction;
         try {

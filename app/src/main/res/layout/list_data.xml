@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/data_item_txt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="0.5"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/txt1"
+            android:id="@+id/data_item_txt1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -23,7 +27,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/txt2"
+            android:id="@+id/data_item_txt2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -33,12 +37,57 @@
             android:text="TextView"
             android:textColor="@color/white"
             android:textSize="20sp" />
+
     </LinearLayout>
 
-    <com.zzh.dreamchaser.debugBT.view.SimpleScopeView
-        android:id="@+id/list_scope"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/list_scope_area"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_weight="0.5"
-        android:visibility="gone" />
+        android:layout_height="match_parent"
+        android:layout_weight="0.5">
+
+        <com.zzh.dreamchaser.debugBT.view.SimpleScopeView
+            android:id="@+id/list_scope"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_weight="0.5"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/data_scope_txt1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="min"
+                android:textColor="#8BC34A" />
+
+            <TextView
+                android:id="@+id/data_scope_txt2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="range"
+                android:textColor="#00BCD4" />
+
+            <TextView
+                android:id="@+id/data_scope_txt3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="max"
+                android:textColor="#F44336" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>

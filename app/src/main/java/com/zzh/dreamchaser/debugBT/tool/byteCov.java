@@ -115,4 +115,20 @@ public class byteCov {
         return -1;
     }
 
+    public static float getFloat4All(int type, byte[] data) {
+        switch (type) {
+            case 0:
+            case 1:
+            case 5:
+                return (float) byte2i8(data);
+            case 2:
+                return (float) byte2i16(data);
+            case 3:
+                return (float) byte2i32(data);
+            case 4:
+                return byte2Fl(data);
+        }
+        return 0.0f;
+    }
+
 }

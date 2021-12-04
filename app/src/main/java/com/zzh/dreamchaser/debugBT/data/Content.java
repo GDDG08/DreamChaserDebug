@@ -9,10 +9,10 @@ import java.util.List;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
 public class Content {
-    public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char"};
-    public static ArrayList tagList = new ArrayList();
-    public static ArrayList list = new ArrayList();
-    public static int dataLen = 0;
+    public  String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char"};
+    public  ArrayList tagList = new ArrayList();
+    public  ArrayList list = new ArrayList();
+    public  int dataLen = 0;
 
     public void CreatContent(byte[] data) {
         int num = (data.length - 1) / 20;
@@ -32,6 +32,20 @@ public class Content {
             tagList.add(tag);
             dataLen++;
         }
+    }
+
+    public void CreatContent_T() {
+        //test
+        list.add(new Var(4, "test1",fl2Byte(1.1f)));
+        tagList.add("test1");
+        list.add(new Var(4, "test2",fl2Byte(2.2f)));
+        tagList.add("test2");
+        list.add(new Var(4, "test3",fl2Byte(3.3f)));
+        tagList.add("test3");
+        list.add(new Var(4, "test4",fl2Byte(4.4f)));
+        tagList.add("test4");
+        dataLen = 4;
+
 //        dataLen = list.size();
     }
 
@@ -43,7 +57,7 @@ public class Content {
             System.arraycopy(data, cur_pos, temp, 0, len);
             ((Var) list.get(i)).setData(temp);
             cur_pos += len;
-            Log.d("RESULT:", ((Var) list.get(i)).getTag()+"-->"+((Var) list.get(i)).getStr());
+            Log.d("RESULT:", ((Var) list.get(i)).getTag() + "-->" + ((Var) list.get(i)).getStr());
         }
     }
 

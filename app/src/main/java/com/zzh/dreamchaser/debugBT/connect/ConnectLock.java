@@ -1,5 +1,7 @@
 package com.zzh.dreamchaser.debugBT.connect;
 
+import android.util.Log;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,6 +34,7 @@ public class ConnectLock {
             running = true;
             thread = new Thread(() -> {
                 while (running) {
+                    Log.d("Connect:","尝试握手");
                     BLsend(i82Byte(0xf2));
                     BLsend(i82Byte(0xff));
                     try {

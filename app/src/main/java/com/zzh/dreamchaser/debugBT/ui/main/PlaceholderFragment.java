@@ -21,16 +21,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.zzh.dreamchaser.debugBT.MainActivity;
 import com.zzh.dreamchaser.debugBT.data.ContentAdapter;
-import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
+//import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
 import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
+
+import org.jetbrains.annotations.NotNull;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
@@ -111,25 +117,55 @@ public class PlaceholderFragment extends Fragment {
                 });
 
                 lvd = binding1.ListViewData;
-                dAdapter = new ContentAdapter(getContext());
-                lvd.setDivider(null);
+//                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() );
+//                //设置布局管理器
+//
+//                //设置为垂直布局，这也是默认的
+//                layoutManager.setOrientation(RecyclerView.VERTICAL);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                        RecyclerView.VERTICAL, false) {
+                    @Override
+                    public boolean canScrollVertically() {
+                        return false;
+                    }
+                };
+                lvd.setLayoutManager(layoutManager);
+                dAdapter = new ContentAdapter(getContext(),lvd);
+//                lvd.setDivider(null);
                 lvd.setAdapter(dAdapter);
 
-                textView_fps = binding1.textViewFps;
+                DefaultItemAnimator itemAni = new DefaultItemAnimator(){
+                    @Override
+                    public void onAddFinished(RecyclerView.ViewHolder item) {
+                        super.onAddFinished(item);
+                        dAdapter.onHold = false;
+                    }
 
+                    @Override
+                    public void onAnimationFinished(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+                        super.onAnimationFinished(viewHolder);
+//                        dAdapter.onHold = false;
+                    }
+                };
+                itemAni.setChangeDuration(0);
+//                itemAni.setMoveDuration(0);
+                itemAni.setSupportsChangeAnimations(false);
+                lvd.setItemAnimator(itemAni);
+
+                textView_fps = binding1.textViewFps;
                 textView_file = binding1.textViewFile;
 //                new ContentUpdate().start();
                 switch2 = binding1.switch2;
                 switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                        for (int i =0; i<lvd.getCount();i++){
-////                            lvd.getItemAtPosition(i).
-//                        }
-                        dAdapter.onScope = isChecked;
-                        dAdapter.notifyDataSetChanged();
-                        lvd.postInvalidate();
+                        dAdapter.setOnScope(isChecked);
+//                        dAdapter.notifyDataSetChanged();
+//                        lvd.postInvalidate();
                     }
+                });
+                binding1.refresh.setOnClickListener((v)->{
+                    MainActivity.onDataUpdate();
                 });
                 break;
             case Page_Tools:
