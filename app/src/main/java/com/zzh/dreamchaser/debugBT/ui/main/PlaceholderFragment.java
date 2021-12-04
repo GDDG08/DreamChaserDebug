@@ -115,6 +115,25 @@ public class PlaceholderFragment extends Fragment {
                         }
                     }
                 });
+                textView_fps = binding1.textViewFps;
+                textView_file = binding1.textViewFile;
+                textView_file.setOnClickListener((v)->{
+                    Toast.makeText(getContext(), mLogger.file+"\n饼：这里应该是点按打开，长按分享", Toast.LENGTH_SHORT).show();
+                });
+
+//                new ContentUpdate().start();
+                switch2 = binding1.switch2;
+                switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        dAdapter.setOnScope(isChecked);
+//                        dAdapter.notifyDataSetChanged();
+//                        lvd.postInvalidate();
+                    }
+                });
+                binding1.refresh.setOnClickListener((v)->{
+                    MainActivity.onDataUpdate();
+                });
 
                 lvd = binding1.ListViewData;
 //                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() );
@@ -152,21 +171,7 @@ public class PlaceholderFragment extends Fragment {
                 itemAni.setSupportsChangeAnimations(false);
                 lvd.setItemAnimator(itemAni);
 
-                textView_fps = binding1.textViewFps;
-                textView_file = binding1.textViewFile;
-//                new ContentUpdate().start();
-                switch2 = binding1.switch2;
-                switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        dAdapter.setOnScope(isChecked);
-//                        dAdapter.notifyDataSetChanged();
-//                        lvd.postInvalidate();
-                    }
-                });
-                binding1.refresh.setOnClickListener((v)->{
-                    MainActivity.onDataUpdate();
-                });
+
                 break;
             case Page_Tools:
                 binding2 = Fragment2Binding.inflate(inflater, container, false);

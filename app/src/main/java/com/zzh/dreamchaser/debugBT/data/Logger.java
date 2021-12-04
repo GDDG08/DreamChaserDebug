@@ -11,6 +11,7 @@ import android.net.Uri;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.zzh.dreamchaser.debugBT.MainActivity;
+import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,6 +43,9 @@ public class Logger {
                             (dialog, which) -> {
                                 file = addr;
                                 start(activity);
+                                PlaceholderFragment.switch1.setChecked(true);
+                                String filename[] = file.split("/");
+                                PlaceholderFragment.textView_file.setText(filename[filename.length - 1]);
                             })
                     .setNegativeButton("新建文件",
                             (dialog, which) -> {
@@ -65,13 +69,15 @@ public class Logger {
 
     public void start(Context context) {
         try {
-            Uri uri = Uri.parse(file);
-//            Format
-            OutputStream os = context.getContentResolver().openOutputStream(uri);
-            bw = new BufferedWriter(new OutputStreamWriter(os));
+            File f = new File(file);
+            bw = new BufferedWriter(new FileWriter(f, true));
+//            Uri uri = Uri.parse(file);
+////            Format
+//            OutputStream os = context.getContentResolver().openOutputStream(uri);
+//            bw = new BufferedWriter(new OutputStreamWriter(os));
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             onLogging = true;
         }
     }

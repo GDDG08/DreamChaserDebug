@@ -34,6 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="File Directory"
                 android:textColor="@color/bluegray_100"
                 android:textSize="10sp" />

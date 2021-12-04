@@ -8,10 +8,11 @@ android {
 
     defaultConfig {
         applicationId "com.zzh.dreamchaser.debugBT"
-        minSdkVersion 28
-        targetSdkVersion 30
-        versionCode 21112801
-        versionName "0.1forLYS"
+        minSdkVersion 26
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 28
+        versionCode 21120408
+        versionName "1.1-Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

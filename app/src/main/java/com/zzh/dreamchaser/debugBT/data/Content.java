@@ -36,15 +36,23 @@ public class Content {
 
     public void CreatContent_T() {
         //test
-        list.add(new Var(4, "test1",fl2Byte(1.1f)));
+        list.add(new Var(4, "这里是",fl2Byte(1.1f)));
         tagList.add("test1");
-        list.add(new Var(4, "test2",fl2Byte(2.2f)));
+        list.add(new Var(4, "Dream Chaser",fl2Byte(2.2f)));
         tagList.add("test2");
-        list.add(new Var(4, "test3",fl2Byte(3.3f)));
+        list.add(new Var(4, "应该已经",fl2Byte(3.3f)));
         tagList.add("test3");
-        list.add(new Var(4, "test4",fl2Byte(4.4f)));
+        list.add(new Var(4, "差不多能用了",fl2Byte(4.4f)));
         tagList.add("test4");
-        dataLen = 4;
+        list.add(new Var(4, "右下角连接蓝牙",fl2Byte(5.5f)));
+        tagList.add("test5");
+        list.add(new Var(4, "记得看文档",fl2Byte(6.6f)));
+        tagList.add("test6");
+        list.add(new Var(4, "最好不要放后台",fl2Byte(7.7f)));
+        tagList.add("test7");
+        list.add(new Var(4, "bug提issue",fl2Byte(8.8f)));
+        tagList.add("test8");
+        dataLen = 8;
 
 //        dataLen = list.size();
     }

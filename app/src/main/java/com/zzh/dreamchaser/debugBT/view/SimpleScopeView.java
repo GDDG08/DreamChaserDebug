@@ -37,6 +37,7 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
 
 
     public static final int REX = 200;
+    public static final int MAX_REX = 10000;
 
     //    private SurfaceHolder surfaceHolder;
     private Paint paint;
@@ -176,14 +177,14 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
 
     private List<Float> getHisData() {
         Var data = (Var) mContent.list.get(dataPos);
-        List<byte[]> history = data.history;
-        int type = data.type;
+        List<Float> history = data.history;
 
         List<Float> res = new ArrayList<>();
         min = Float.POSITIVE_INFINITY;
         max = Float.NEGATIVE_INFINITY;
-        for (byte[] b : history) {
-            float f = getFloat4All(type, b);
+
+        for (int i = 0; i < REX; i++) {
+            float f = history.get(history.size() - REX + i);
             min = Float.min(f, min);
             max = Float.max(f, max);
             res.add(f);
@@ -192,7 +193,7 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
         while ((range *= 2) <= max - min) ;
 
         int ave = (int) (max + min) / 2;
-        offset = (2*ave / 1)/2;
+        offset = (2 * ave / 1) / 2;
 //        while ((offset = (offset+1)*2) < ave) ;
         return res;
     }

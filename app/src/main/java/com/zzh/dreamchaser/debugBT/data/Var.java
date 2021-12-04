@@ -21,7 +21,7 @@ public class Var {
     public int type;
     public String tag;
     public byte[] data = i82Byte(0);
-    public List<byte[]> history = new ArrayList<>();
+    public List<Float> history = new ArrayList<>();
 
     public Var(int ty, String ta) {
         this.type = ty;
@@ -44,8 +44,8 @@ public class Var {
 
     public void setData(byte[] data) {
         this.data = data;
-        history.add(data);
-        if(history.size()> SimpleScopeView.REX)
+        history.add(getFloat4All(type,data));
+        if(history.size()> SimpleScopeView.MAX_REX)
             history.remove(0);
     }
 

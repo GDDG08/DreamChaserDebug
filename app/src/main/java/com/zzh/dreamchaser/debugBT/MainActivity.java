@@ -1,13 +1,16 @@
 package com.zzh.dreamchaser.debugBT;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -42,6 +45,7 @@ import com.zzh.dreamchaser.debugBT.connect.ConnectLock;
 import com.zzh.dreamchaser.debugBT.data.Content;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
+import com.zzh.dreamchaser.debugBT.tool.FileUtils;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 import com.zzh.dreamchaser.debugBT.ui.main.SectionsPagerAdapter;
 import com.zzh.dreamchaser.debugBT.databinding.ActivityMainBinding;
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     public static final String PREFS_NAME = "com.zzh.dreamchaser.debugBT.color";
 
     public static Content mContent;
-//    public ContentUpdate mContentupdate = new ContentUpdate();
+    //    public ContentUpdate mContentupdate = new ContentUpdate();
     private static final int UPDATE = 0;
 
     public static Logger mLogger;
@@ -138,9 +142,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "正在连接", Snackbar.LENGTH_LONG).show();
-//                mBLESPPUtils.connect("00:21:13:00:71:c3");
-//                Toast.makeText(MainActivity.this,"正在连接",Toast.LENGTH_LONG);
+                PlaceholderFragment.switch2.setChecked(false);
                 mDeviceDialogCtrl.show();
             }
         });
@@ -175,10 +177,25 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                             "android.permission.ACCESS_FINE_LOCATION",
                             "android.permission.ACCESS_COARSE_LOCATION",
                             "android.permission.ACCESS_WIFI_STATE",
-                            "android.permission.WRITE_EXTERNAL_STORAGE"
+                            "android.permission.WRITE_EXTERNAL_STORAGE",
+                            "android.permission.READ_EXTERNAL_STORAGE"
                     },
                     1
             );
+        }
+        if (Build.VERSION.SDK_INT >= 23) {
+            int REQUEST_CODE_PERMISSION_STORAGE = 1;
+            String[] permissions = {
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+
+            for (String str : permissions) {
+                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                    this.requestPermissions(permissions, REQUEST_CODE_PERMISSION_STORAGE);
+                    return;
+                }
+            }
         }
     }
 
@@ -436,6 +453,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     private interface DoSthAfterPost {
         void doIt();
+
     }
 
     public static void BLsend(String str) {
@@ -451,15 +469,19 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
             if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
+                FileUtils fu = new FileUtils(this);
                 Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
-                mLogger.file = uri.toString();
+                mLogger.file = fu.getFilePathByUri(uri);
 
                 mLogger.start(this);
-                Toast.makeText(this, mLogger.file.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, mLogger.file, Toast.LENGTH_SHORT).show();
                 SharedPreferences.Editor info_edit = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE).edit();
-                info_edit.putString("LogFile", mLogger.file.toString());
+                info_edit.putString("LogFile", mLogger.file);
                 info_edit.apply();
-                switch1.setChecked(true);
+
+                PlaceholderFragment.switch1.setChecked(true);
+                String filename[] = mLogger.file.split("/");
+                PlaceholderFragment.textView_file.setText(filename[filename.length - 1]);
             }
         }
     }

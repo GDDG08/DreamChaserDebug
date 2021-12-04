@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +19,7 @@ import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
-    //② 创建ViewHolder
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final LinearLayout txt;
         public final ConstraintLayout scope_area;
@@ -35,12 +36,18 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
             scope_txt2 = (TextView) v.findViewById(R.id.data_scope_txt2);
             scope_txt3 = (TextView) v.findViewById(R.id.data_scope_txt3);
             ssv = (SimpleScopeView) v.findViewById(R.id.list_scope);
+
+            v.setOnClickListener((view) -> {
+//                MainActivity.pos
+            });
         }
     }
 
     private Context mContext;
     private MyListView mMyListView;
     public boolean onScope = false, onHold = false;
+
+
 
     public ContentAdapter(Context content, MyListView mlv) {
         this.mContext = content;
