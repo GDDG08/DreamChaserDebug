@@ -1,5 +1,6 @@
 package com.zzh.dreamchaser.debugBT.ui.main;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zzh.dreamchaser.debugBT.MainActivity;
+import com.zzh.dreamchaser.debugBT.ScopeActivity;
+import com.zzh.dreamchaser.debugBT.SplashActivity;
 import com.zzh.dreamchaser.debugBT.data.ContentAdapter;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
@@ -99,7 +102,6 @@ public class PlaceholderFragment extends Fragment {
                 root = binding1.getRoot();
 
                 switch1 = binding1.switch1;
-
                 switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -126,7 +128,7 @@ public class PlaceholderFragment extends Fragment {
                 switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        dAdapter.setOnScope(isChecked);
+                        dAdapter.setOnScope(isChecked,true);
 //                        dAdapter.notifyDataSetChanged();
 //                        lvd.postInvalidate();
                     }
@@ -151,9 +153,23 @@ public class PlaceholderFragment extends Fragment {
                 lvd.setLayoutManager(layoutManager);
                 dAdapter = new ContentAdapter(getContext(),lvd);
 //                lvd.setDivider(null);
+                dAdapter.setItemOnClickListener((v,pos)->{
+                    if (dAdapter.onScope && pos%2 == 1) {
+                        Intent intent = new Intent(getActivity(), ScopeActivity.class);
+                        intent.putExtra("watch_list", new int[]{pos/2});
+                        startActivity(intent);
+                    }
+                });
                 lvd.setAdapter(dAdapter);
 
+
                 DefaultItemAnimator itemAni = new DefaultItemAnimator(){
+                    @Override
+                    public void onAddStarting(RecyclerView.ViewHolder item) {
+                        super.onAddStarting(item);
+                        dAdapter.onHold = true;
+                    }
+
                     @Override
                     public void onAddFinished(RecyclerView.ViewHolder item) {
                         super.onAddFinished(item);

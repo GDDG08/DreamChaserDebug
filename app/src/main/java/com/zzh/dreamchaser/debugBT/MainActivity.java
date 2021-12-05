@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     private static final int UPDATE = 0;
 
     public static Logger mLogger;
+    public static boolean pauseShow = false;
 
     static {
         mLogger = new Logger();
@@ -167,6 +168,30 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         super.onDestroy();
         mBLESPPUtils.onDestroy();
         mLogger.stop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (dAdapter != null){
+            if (dAdapter.onScope){
+                pauseShow = true;
+                dAdapter.setOnScope(false,false);
+            }
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (dAdapter != null){
+            if (pauseShow) {
+                dAdapter.setOnScope(true,false);
+                pauseShow = false;
+            }
+        }
+
     }
 
     private void initPermissions() {

@@ -20,13 +20,15 @@ import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final LinearLayout txt;
         public final ConstraintLayout scope_area;
         public final TextView txt1, txt2, scope_txt1, scope_txt2, scope_txt3;
         public final SimpleScopeView ssv;
 
-        public ViewHolder(View v) {
+        MyItemOnClickListener mListener;
+
+        public ViewHolder(View v, MyItemOnClickListener myItemOnClickListener) {
             super(v);
             txt = (LinearLayout) v.findViewById(R.id.data_item_txt);
             txt1 = (TextView) v.findViewById(R.id.data_item_txt1);
@@ -37,9 +39,15 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
             scope_txt3 = (TextView) v.findViewById(R.id.data_scope_txt3);
             ssv = (SimpleScopeView) v.findViewById(R.id.list_scope);
 
-            v.setOnClickListener((view) -> {
-//                MainActivity.pos
-            });
+            this.mListener = myItemOnClickListener;
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener != null) {
+                mListener.onItemOnClick(v, getAdapterPosition());
+            }
         }
     }
 
@@ -47,6 +55,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     private MyListView mMyListView;
     public boolean onScope = false, onHold = false;
 
+    private MyItemOnClickListener mMyItemOnClickListener;
 
 
     public ContentAdapter(Context content, MyListView mlv) {
@@ -123,13 +132,12 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //LayoutInflater.from指定写法
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_data, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, mMyItemOnClickListener);
     }
 
-    public void setOnScope(boolean set) {
-
+    public void setOnScope(boolean set, boolean hold) {
         if (set != onScope) {
-            onHold = true;
+            onHold = hold;
             onScope = set;
             for (int i = 0; i < mContent.dataLen; i++) {
                 if (set) {
@@ -147,9 +155,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     }
 
     public void onUpDate() {
-        if (onScope) {
-            for (int i = 0; i < mContent.dataLen; i++) {
-                if (!onHold) {
+        if (!onHold) {
+            if (onScope) {
+                for (int i = 0; i < mContent.dataLen; i++) {
                     notifyItemChanged(i * 2);
 //                getItem(2*i+1);
 //                dAdapter.ssv.update();
@@ -161,11 +169,18 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                         vh.scope_txt3.setText(vh.ssv.max + "");
                     }
                 }
+            } else {
+                notifyDataSetChanged();
             }
-        } else {
-            notifyDataSetChanged();
         }
+    }
 
+    public interface MyItemOnClickListener {
+        public void onItemOnClick(View view, int postion);
+    }
+
+    public void setItemOnClickListener(MyItemOnClickListener listener) {
+        mMyItemOnClickListener = listener;
     }
 //public class ContentAdapter extends BaseAdapter {
 //    Context context;
