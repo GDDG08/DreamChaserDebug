@@ -105,11 +105,12 @@ public class PlaceholderFragment extends Fragment {
                 switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (mLogger.onLogging && isChecked)
-                            return;
-                        if (mLogger.file != null) {
-                            if (isChecked)
+                        if (mLogger.onLogging && isChecked){
+                            if (mLogger.file != null)
                                 mLogger.writeHeader();
+                            return;
+                        }
+                        if (mLogger.file != null) {
                             mLogger.onLogging = isChecked;
                         }else {
                             buttonView.setChecked(false);

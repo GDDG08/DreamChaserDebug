@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.smarx.notchlib.NotchScreenManager;
 import com.zzh.dreamchaser.debugBT.data.Var;
+import com.zzh.dreamchaser.debugBT.tool.Interpolation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,73 +143,71 @@ public class ScopeActivity extends AppCompatActivity {
         }
 
         private void resetViewport() {
-            if (timeStamp_his.length == 0)
-                return;
-            // Reset viewport height range to (0,100)
-            Viewport v1 = new Viewport(chart.getMaximumViewport());
-            v1.bottom = data_min - 5;
-            v1.top = data_max + 5;
-            v1.left = timeStamp_his[0];
-            v1.right = timeStamp_his[timeStamp_his.length - 1];
-            chart.setMaximumViewport(v1);
-
-            Viewport v2 = new Viewport(chart.getMaximumViewport());
-            v2.bottom = data_min_cur - 1;
-            v2.top = data_max_cur + 1;
-            if (timeStamp_his.length > DEFAULT_CURRENT_VIEW_POINTS_NUM)
-                v2.left = timeStamp_his[timeStamp_his.length - DEFAULT_CURRENT_VIEW_POINTS_NUM];
-            else
-                v2.left = timeStamp_his[0];
-            v2.right = timeStamp_his[timeStamp_his.length - 1];
-            chart.setCurrentViewport(v2);
+            final Viewport v = new Viewport(chart.getMaximumViewport());
+            v.bottom = -200;
+            v.top = 300;
+            v.left = -100;
+            v.right = maxnum - 1+100;
+            chart.setMaximumViewport(v);
+            chart.setCurrentViewport(v);
         }
 
         private float data_min = Float.POSITIVE_INFINITY, data_max = Float.NEGATIVE_INFINITY;
         private float data_min_cur = Float.POSITIVE_INFINITY, data_max_cur = Float.NEGATIVE_INFINITY;
 
+        int maxnum = 10;
         private void processData() {
-            data_min = Float.POSITIVE_INFINITY;
-            data_max = Float.NEGATIVE_INFINITY;
-
-            Var timeStamp = (Var) mContent.list.get(0);
-            timeStamp_his = timeStamp.history.toArray(new Float[0]);
-            List<Line> lines = new ArrayList<Line>();
-            for (int i = 0; i < watch_list.length; i++) {
-                Var data = (Var) mContent.list.get(watch_list[i]);
-                Float[] data_his = data.history.toArray(new Float[0]);
-
-                if (data_his.length == 0)
-                    continue;
-                for (float his : data_his) {
-                    data_min = Float.min(data_min, his);
-                    data_max = Float.max(data_max, his);
-                }
-
-                for (int k = 1; k < data_his.length && k < DEFAULT_CURRENT_VIEW_POINTS_NUM; k++) {
-                    data_min_cur = Float.min(data_min_cur, data_his[data_his.length - k]);
-                    data_max_cur = Float.max(data_max_cur, data_his[data_his.length - k]);
-                }
-
-                List<PointValue> values = new ArrayList<PointValue>();
-                for (int j = 0; j < MAX_REX && j < timeStamp_his.length; j++) {
-                    values.add(new PointValue(timeStamp_his[j], data_his[j]));
-                }
-
-                Line line = new Line(values);
-                line.setColor(ChartUtils.COLORS[i]);
-                line.setShape(shape);
-                line.setCubic(isCubic);
-                line.setFilled(isFilled);
-                line.setHasLabels(hasLabels);
-                line.setHasLabelsOnlyForSelected(hasLabelForSelected);
-                line.setHasLines(hasLines);
-                line.setHasPoints(hasPoints);
-//                line.setHasGradientToTransparent(hasGradientToTransparent);
-                if (pointsHaveDifferentColor) {
-                    line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
-                }
-                lines.add(line);
+            data_min = 0;
+            data_max = 100;
+            float[] data_rec = new float[maxnum];
+            for (int j = 0; j < maxnum; ++j) {
+                data_rec[j] = (float) Math.random() * 50f;
             }
+
+            List<Interpolation.Point> points = new ArrayList<>();
+            List<Line> lines = new ArrayList<Line>();
+            List<PointValue> values = new ArrayList<>();
+            for (int j = 0; j < maxnum; j++) {
+                values.add(new PointValue(j, data_rec[j]));
+                points.add(new Interpolation.Point(j, data_rec[j]));
+            }
+
+            Line line = new Line(values);
+            line.setColor(ChartUtils.COLORS[0]);
+            line.setShape(shape);
+            line.setCubic(isCubic);
+            line.setFilled(isFilled);
+            line.setHasLabels(hasLabels);
+            line.setHasLabelsOnlyForSelected(hasLabelForSelected);
+            line.setHasLines(false);
+            line.setHasPoints(true);
+//                line.setHasGradientToTransparent(hasGradientToTransparent);
+            if (pointsHaveDifferentColor) {
+                line.setPointColor(ChartUtils.COLORS[(0 + 1) % ChartUtils.COLORS.length]);
+            }
+            lines.add(line);
+
+            Interpolation.NewtonItp myNewtItp = new Interpolation.NewtonItp(points, maxnum);
+            myNewtItp.calPolynomial();
+            values = new ArrayList<>();
+            for (float j = -10; j < maxnum+10; j+=0.01) {
+                values.add(new PointValue(j, (float) myNewtItp.getInterpolation(j)));
+            }
+
+            line = new Line(values);
+            line.setColor(ChartUtils.COLORS[1]);
+            line.setShape(shape);
+            line.setCubic(isCubic);
+            line.setFilled(isFilled);
+            line.setHasLabels(hasLabels);
+            line.setHasLabelsOnlyForSelected(hasLabelForSelected);
+            line.setHasLines(hasLines);
+            line.setHasPoints(hasPoints);
+//                line.setHasGradientToTransparent(hasGradientToTransparent);
+            if (pointsHaveDifferentColor) {
+                line.setPointColor(ChartUtils.COLORS[(1 + 1) % ChartUtils.COLORS.length]);
+            }
+            lines.add(line);
 
             data = new LineChartData(lines);
 
@@ -235,120 +234,8 @@ public class ScopeActivity extends AppCompatActivity {
             isCubic = !isCubic;
 
             processData();
-
-//            if (isCubic) {
-//                // It is good idea to manually set a little higher max viewport for cubic lines because sometimes line
-//                // go above or below max/min. To do that use Viewport.inest() method and pass negative value as dy
-//                // parameter or just set top and bottom values manually.
-//                // In this example I know that Y values are within (0,100) range so I set viewport height range manually
-//                // to (-5, 105).
-//                // To make this works during animations you should use Chart.setViewportCalculationEnabled(false) before
-//                // modifying viewport.
-//                // Remember to set viewport after you call setLineChartData().
-//                //TODO: change
-//                final Viewport v = new Viewport(chart.getMaximumViewport());
-//                v.bottom = -5;
-//                v.top = 105;
-//                // You have to set max and current viewports separately.
-//                chart.setMaximumViewport(v);
-//                // I changing current viewport with animation in this case.
-//                chart.setCurrentViewportWithAnimation(v);
-//            } else {
-//                // If not cubic restore viewport to (0,100) range.
-//                final Viewport v = new Viewport(chart.getMaximumViewport());
-//                v.bottom = 0;
-//                v.top = 100;
-//
-//                // You have to set max and current viewports separately.
-//                // In this case, if I want animation I have to set current viewport first and use animation listener.
-//                // Max viewport will be set in onAnimationFinished method.
-//                chart.setViewportAnimationListener(new ChartAnimationListener() {
-//
-//                    @Override
-//                    public void onAnimationStarted() {
-//                        // TODO Auto-generated method stub
-//
-//                    }
-//
-//                    @Override
-//                    public void onAnimationFinished() {
-//                        // Set max viewpirt and remove listener.
-//                        chart.setMaximumViewport(v);
-//                        chart.setViewportAnimationListener(null);
-//
-//                    }
-//                });
-//                // Set current viewpirt with animation;
-//                chart.setCurrentViewportWithAnimation(v);
-//            }
             resetViewport();
-
         }
-
-//        private void toggleFilled() {
-//            isFilled = !isFilled;
-//
-//            generateData();
-//        }
-//
-//        private void togglePointColor() {
-//            pointsHaveDifferentColor = !pointsHaveDifferentColor;
-//
-//            generateData();
-//        }
-//
-//        private void setCircles() {
-//            shape = ValueShape.CIRCLE;
-//
-//            generateData();
-//        }
-//
-//        private void setSquares() {
-//            shape = ValueShape.SQUARE;
-//
-//            generateData();
-//        }
-//
-//        private void setDiamonds() {
-//            shape = ValueShape.DIAMOND;
-//
-//            generateData();
-//        }
-//
-//        private void toggleLabels() {
-//            hasLabels = !hasLabels;
-//
-//            if (hasLabels) {
-//                hasLabelForSelected = false;
-//                chart.setValueSelectionEnabled(hasLabelForSelected);
-//            }
-//
-//            generateData();
-//        }
-//
-//        private void toggleLabelForSelected() {
-//            hasLabelForSelected = !hasLabelForSelected;
-//
-//            chart.setValueSelectionEnabled(hasLabelForSelected);
-//
-//            if (hasLabelForSelected) {
-//                hasLabels = false;
-//            }
-//
-//            generateData();
-//        }
-//
-//        private void toggleAxes() {
-//            hasAxes = !hasAxes;
-//
-//            generateData();
-//        }
-//
-//        private void toggleAxesNames() {
-//            hasAxesNames = !hasAxesNames;
-//
-//            generateData();
-//        }
 
         /**
          * To animate values you have to change targets values and then call {@link Chart#startDataAnimation()}
@@ -373,10 +260,7 @@ public class ScopeActivity extends AppCompatActivity {
 
             @Override
             public void onValueDeselected() {
-                // TODO Auto-generated method stub
-
             }
-
         }
     }
 }
