@@ -1,9 +1,12 @@
 package com.zzh.dreamchaser.debugBT.ui.main;
 
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +30,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zzh.dreamchaser.debugBT.CustomActivity;
 import com.zzh.dreamchaser.debugBT.MainActivity;
 import com.zzh.dreamchaser.debugBT.ScopeActivity;
 import com.zzh.dreamchaser.debugBT.SplashActivity;
+import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
+import com.zzh.dreamchaser.debugBT.connect.DeviceHandle;
+import com.zzh.dreamchaser.debugBT.connect.DeviceList;
+import com.zzh.dreamchaser.debugBT.connect.RecvTask;
+import com.zzh.dreamchaser.debugBT.connect.TestRun;
+import com.zzh.dreamchaser.debugBT.connect.TestTask;
 import com.zzh.dreamchaser.debugBT.data.ContentAdapter;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
@@ -40,6 +50,9 @@ import com.zzh.dreamchaser.debugBT.view.MyListView;
 import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
@@ -69,7 +82,10 @@ public class PlaceholderFragment extends Fragment {
     public static TextView textView_file;
     public static Switch switch1;
     public static Switch switch2;
-//    int color_change_cnt = 0;
+
+    DeviceList mDeviceList = new DeviceList();
+    ExecutorService executorService = Executors.newScheduledThreadPool(2);
+
 
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = new PlaceholderFragment();
@@ -111,7 +127,7 @@ public class PlaceholderFragment extends Fragment {
                             if (isChecked)
                                 mLogger.writeHeader();
                             mLogger.onLogging = isChecked;
-                        }else {
+                        } else {
                             buttonView.setChecked(false);
                             mLogger.init(getActivity());
                         }
@@ -119,8 +135,8 @@ public class PlaceholderFragment extends Fragment {
                 });
                 textView_fps = binding1.textViewFps;
                 textView_file = binding1.textViewFile;
-                textView_file.setOnClickListener((v)->{
-                    Toast.makeText(getContext(), mLogger.file+"\n饼：这里应该是点按打开，长按分享", Toast.LENGTH_SHORT).show();
+                textView_file.setOnClickListener((v) -> {
+                    Toast.makeText(getContext(), mLogger.file + "\n饼：这里应该是点按打开，长按分享", Toast.LENGTH_SHORT).show();
                 });
 
 //                new ContentUpdate().start();
@@ -128,12 +144,12 @@ public class PlaceholderFragment extends Fragment {
                 switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        dAdapter.setOnScope(isChecked,true);
+                        dAdapter.setOnScope(isChecked, true);
 //                        dAdapter.notifyDataSetChanged();
 //                        lvd.postInvalidate();
                     }
                 });
-                binding1.refresh.setOnClickListener((v)->{
+                binding1.refresh.setOnClickListener((v) -> {
                     MainActivity.onDataUpdate();
                 });
 
@@ -151,19 +167,19 @@ public class PlaceholderFragment extends Fragment {
                     }
                 };
                 lvd.setLayoutManager(layoutManager);
-                dAdapter = new ContentAdapter(getContext(),lvd);
+                dAdapter = new ContentAdapter(getContext(), lvd);
 //                lvd.setDivider(null);
-                dAdapter.setItemOnClickListener((v,pos)->{
-                    if (dAdapter.onScope && pos%2 == 1) {
+                dAdapter.setItemOnClickListener((v, pos) -> {
+                    if (dAdapter.onScope && pos % 2 == 1) {
                         Intent intent = new Intent(getActivity(), ScopeActivity.class);
-                        intent.putExtra("watch_list", new int[]{pos/2});
+                        intent.putExtra("watch_list", new int[]{pos / 2});
                         startActivity(intent);
                     }
                 });
                 lvd.setAdapter(dAdapter);
 
 
-                DefaultItemAnimator itemAni = new DefaultItemAnimator(){
+                DefaultItemAnimator itemAni = new DefaultItemAnimator() {
                     @Override
                     public void onAddStarting(RecyclerView.ViewHolder item) {
                         super.onAddStarting(item);
@@ -193,6 +209,10 @@ public class PlaceholderFragment extends Fragment {
                 binding2 = Fragment2Binding.inflate(inflater, container, false);
                 root = binding2.getRoot();
 
+                binding2.button2.setOnClickListener((v) -> {
+                    Intent i = new Intent(getActivity(), CustomActivity.class);
+                    startActivity(i);
+                });
                 final SeekBar seekBar1 = binding2.seekBar1;
                 final SeekBar seekBar2 = binding2.seekBar2;
                 final SeekBar seekBar3 = binding2.seekBar3;
@@ -237,6 +257,74 @@ public class PlaceholderFragment extends Fragment {
                 seekBar2.setOnSeekBarChangeListener(listener);
                 seekBar3.setOnSeekBarChangeListener(listener);
                 seekBar4.setOnSeekBarChangeListener(listener);
+
+
+//                TestRun tr1 = new TestRun("FIR");
+//                Thread tt1 = new Thread(tr1);
+//                tt1.run();
+//                TestRun tr2 = new TestRun("DER");
+//                Thread tt2 = new Thread(tr2);
+//                tt2.run();
+
+
+                BLESPPUtils.OnBluetoothAction oba = new BLESPPUtils.OnBluetoothAction() {
+                    @Override
+                    public void onFoundDevice(BluetoothDevice device) {
+
+                    }
+
+                    @Override
+                    public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
+//                        BLESPPUtils.RecvTask recvTask = new BLESPPUtils.RecvTask(mBLESPPUtils1.on)socket)
+                        Log.d("DOUBLE", "连接成功" + device.getName() + device.getAddress());
+                        ((MainActivity) getActivity()).postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!");
+                    }
+
+                    @Override
+                    public void onConnectFailed(String msg) {
+                        Log.d("DOUBLE", "连接失败！" + msg);
+                        ((MainActivity) getActivity()).postShowToast(msg);
+                    }
+
+                    @Override
+                    public void onReceiveBytes(int id, byte[] bytes) {
+                        Log.d("Receiving1----->", "设备" + id + ":" + new String(bytes));
+                        ((MainActivity) getActivity()).runOnUiThread(() -> {
+                            if (id == 0)
+                                binding2.textView.setText(new String(bytes));
+                            else if (id == 1)
+                                binding2.textView3.setText(new String(bytes));
+                        });
+                    }
+
+                    @Override
+                    public void onSendBytes(int id, byte[] bytes) {
+
+                    }
+
+                    @Override
+                    public void onFinishFoundDevice() {
+
+                    }
+                };
+                DeviceList.setOnBluetoothAction(oba);
+//                BLESPPUtils mBLESPPUtils = new BLESPPUtils(getActivity(), oba);
+//
+//                if (!mBLESPPUtils.isBluetoothEnable())
+//                    mBLESPPUtils.enableBluetooth();
+//                mBLESPPUtils.onCreate();
+
+                binding2.button3.setOnClickListener((v) -> {
+//                    ExecutorService executorService2 = Executors.newScheduledThreadPool(2);
+//
+//                    executorService2.submit(new TestRun("FIR"));
+//                    executorService2.submit(new TestRun("DEC"));
+
+                    DeviceList.connect("98:D3:61:FD:33:2D");
+                });
+                binding2.button4.setOnClickListener((v) -> {
+                    DeviceList.connect("00:21:13:00:71:C3");
+                });
                 break;
             default:
                 break;

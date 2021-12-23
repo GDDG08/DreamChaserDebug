@@ -9,24 +9,24 @@ import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.i82Byte;
 
 public class ConnectLock {
-    public static boolean Connected = false;
-    public static boolean onLogging = false;
-    public static class KeepAlive {
-        private static Timer timer = new Timer();
-        private static TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-//                runOnUiThread(new ContentUpdate());
-            }
-        };
-        public static void start(){
-            timer.schedule(task, 1000, 1000);
-        }
-        public static void stop(){
-            timer.cancel();
-        }
-
-    }
+//    public static boolean Connected = false;
+//    public static boolean onLogging = false;
+//    public static class KeepAlive {
+//        private static Timer timer = new Timer();
+//        private static TimerTask task = new TimerTask() {
+//            @Override
+//            public void run() {
+////                runOnUiThread(new ContentUpdate());
+//            }
+//        };
+//        public static void start(){
+//            timer.schedule(task, 1000, 1000);
+//        }
+//        public static void stop(){
+//            timer.cancel();
+//        }
+//
+//    }
     public static class HandShake {
         private static Thread thread;
         private static boolean running = false;

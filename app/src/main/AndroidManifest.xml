@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zzh.dreamchaser.debugBT">
-
-    <!--管理蓝牙需要-->
+    <!-- 管理蓝牙需要 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!--搜索蓝牙需要，因为蓝牙可以被用来定位，所以需要定位权限-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 搜索蓝牙需要，因为蓝牙可以被用来定位，所以需要定位权限 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DreamChaserDebug"
-        android:hardwareAccelerated="true"
-        android:requestLegacyExternalStorage="true">
-
+        android:theme="@style/Theme.DreamChaserDebug">
+        <activity
+            android:name=".CustomActivity"
+            android:label="@string/title_activity_custom"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DreamChaserDebug.NoActionBar"></activity>
+            android:theme="@style/Theme.DreamChaserDebug.NoActionBar" />
         <activity
             android:name=".ScopeActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
-            android:theme="@style/Theme.DreamChaserDebug.NoActionBar.FullScreen"></activity>
-
+            android:theme="@style/Theme.DreamChaserDebug.NoActionBar.FullScreen" />
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.DreamChaserDebug.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />

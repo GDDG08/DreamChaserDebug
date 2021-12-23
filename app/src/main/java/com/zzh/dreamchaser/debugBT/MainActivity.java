@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
+import static com.zzh.dreamchaser.debugBT.tool.myLog.setEnableLogOut;
 import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.dAdapter;
 import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.lvd;
 import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.switch1;
@@ -42,6 +44,7 @@ import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.textView_f
 
 import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
 import com.zzh.dreamchaser.debugBT.connect.ConnectLock;
+import com.zzh.dreamchaser.debugBT.connect.DeviceList;
 import com.zzh.dreamchaser.debugBT.data.Content;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
@@ -49,6 +52,7 @@ import com.zzh.dreamchaser.debugBT.tool.FileUtils;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 import com.zzh.dreamchaser.debugBT.ui.main.SectionsPagerAdapter;
 import com.zzh.dreamchaser.debugBT.databinding.ActivityMainBinding;
+import com.zzh.dreamchaser.debugBT.view.DeviceDialog;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -65,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @SuppressLint("StaticFieldLeak")
     public static BLESPPUtils mBLESPPUtils;
-    private ArrayList<BluetoothDevice> mDevicesList = new ArrayList<>();
-    private DeviceDialogCtrl mDeviceDialogCtrl;
+    private DeviceDialog mDeviceDialogCtrl;
+    public static ArrayList<BluetoothDevice> mDevicesList = new ArrayList<>();
 
     boolean first_flag = true;
     public static final String PREFS_NAME = "com.zzh.dreamchaser.debugBT.color";
@@ -150,13 +154,12 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
 
         initPermissions();
-        initColors(this);
         mBLESPPUtils = new BLESPPUtils(MainActivity.this, this);
-        mBLESPPUtils.setEnableLogOut();
+        setEnableLogOut();
 //        mBLESPPUtils.setStopFlag("@\r\n".getBytes());
         if (!mBLESPPUtils.isBluetoothEnable()) mBLESPPUtils.enableBluetooth();
         mBLESPPUtils.onCreate();
-        mDeviceDialogCtrl = new DeviceDialogCtrl(this);
+        mDeviceDialogCtrl = new DeviceDialog(this, mBLESPPUtils);
 
 //        ContentUpdate.start_tim(refresh_task);
         mContent = new Content();
@@ -224,35 +227,11 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         }
     }
 
-    public static void initColors(Context mContext) {
-        SharedPreferences colorInfo = mContext.getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-        if (!colorInfo.getBoolean("Init", false)) {
-            SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
-            for (int i = 0; i < 3; i++) {
-                int def = Color.rgb(0, 0, 0);
-                switch (i) {
-                    case 3:
-                        def = Color.rgb(100, 0, 0);
-                        break;
-                    case 2:
-                        def = Color.rgb(50, 50, 0);
-                        break;
-                    case 1:
-                        def = Color.rgb(0, 100, 0);
-                        break;
-                }
-                editor.putInt("light" + i, def);
-            }
-            editor.putBoolean("Init", true);
-            editor.apply();
-        }
-    }
-
     @Override
     public void onFoundDevice(BluetoothDevice device) {
 
 //        Toast.makeText(MainActivity.this, device.getName(),Toast.LENGTH_LONG).show();
-        if (device.getName() == null || !device.getName().contains("RoboMaster"))
+        if (!(device.getName() == null || device.getName().contains("Robo")|| device.getName().contains("RM")))
             return;
         // 判断是不是重复的
         for (int i = 0; i < mDevicesList.size(); i++) {
@@ -268,13 +247,14 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                 BluetoothDevice clickDevice = (BluetoothDevice) v.getTag();
                 postShowToast("开始连接:" + clickDevice.getName());
 //                mLogTv.setText(mLogTv.getText() + "\n" + "开始连接:" + clickDevice.getName());
-                mBLESPPUtils.connect(clickDevice);
+//                mBLESPPUtils.connect(clickDevice);
+                DeviceList.connect(clickDevice.getAddress());
             }
         });
     }
 
     @Override
-    public void onConnectSuccess(BluetoothDevice device) {
+    public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
         postShowToast("连接成功", new DoSthAfterPost() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -298,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     boolean onLogging = false;
 
     @Override
-    public void onReceiveBytes(byte[] bytes) {
+    public void onReceiveBytes(int id, byte[] bytes) {
         if (first_rec) {
             first_rec = false;
             return;
@@ -350,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     }
 
     @Override
-    public void onSendBytes(byte[] bytes) {
+    public void onSendBytes(int id, byte[] bytes) {
         Log.e("BLE", "Sending----->" + byte2Hex(bytes));
     }
 
@@ -359,134 +339,30 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         Toast.makeText(this, "搜索已暂停", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 设备选择对话框控制
-     */
-    private class DeviceDialogCtrl {
-        private LinearLayout mDialogRootView;
-        private ProgressBar mProgressBar;
-        private AlertDialog mConnectDeviceDialog;
-
-        DeviceDialogCtrl(Context context) {
-            // 搜索进度条
-            mProgressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
-            mProgressBar.setLayoutParams(
-                    new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            50
-                    )
-            );
-            mProgressBar.setIndeterminate(true);
-
-            // 根布局
-            mDialogRootView = new LinearLayout(context);
-            mDialogRootView.setOrientation(LinearLayout.VERTICAL);
-            mDialogRootView.addView(mProgressBar);
-            mDialogRootView.setMinimumHeight(700);
-
-            // 容器布局
-            ScrollView scrollView = new ScrollView(context);
-            scrollView.addView(mDialogRootView,
-                    new FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            700
-                    )
-            );
-
-            // 构建对话框
-            mConnectDeviceDialog = new AlertDialog
-                    .Builder(context)
-                    .setNegativeButton("刷新", null)
-                    .setPositiveButton("退出", null)
-                    .create();
-            mConnectDeviceDialog.setTitle("选择RoboMaster调试器");
-            mConnectDeviceDialog.setView(scrollView);
-            mConnectDeviceDialog.setCancelable(true);
-        }
-
-        /**
-         * 显示并开始搜索设备
-         */
-        void show() {
-            mBLESPPUtils.startDiscovery();
-
-            mConnectDeviceDialog.show();
-            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnLongClickListener(v -> {
-                mConnectDeviceDialog.dismiss();
-                return false;
-            });
-            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                mConnectDeviceDialog.dismiss();
-                finish();
-            });
-            mConnectDeviceDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
-                mDialogRootView.removeAllViews();
-//                    mProgressBar.setProgress(50,true);
-                mProgressBar.setIndeterminate(true);
-                mDialogRootView.addView(mProgressBar);
-                mDevicesList.clear();
-                mBLESPPUtils.startDiscovery();
-            });
-        }
-
-        /**
-         * 取消对话框
-         */
-        void dismiss() {
-            mConnectDeviceDialog.dismiss();
-        }
-
-        /**
-         * 添加一个设备到列表
-         *
-         * @param device          设备
-         * @param onClickListener 点击回调
-         */
-        private void addDevice(final BluetoothDevice device, final View.OnClickListener onClickListener) {
-            runOnUiThread(() -> {
-                TextView devTag = new TextView(MainActivity.this);
-                devTag.setClickable(true);
-                devTag.setPadding(20, 20, 20, 20);
-                devTag.setBackgroundResource(R.drawable.rect_round_button_ripple);
-                devTag.setText(device.getName() + "\nMAC:" + device.getAddress());
-                devTag.setTextColor(Color.WHITE);
-                devTag.setOnClickListener(onClickListener);
-                devTag.setTag(device);
-                devTag.setLayoutParams(
-                        new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                );
-                ((LinearLayout.LayoutParams) devTag.getLayoutParams()).setMargins(
-                        20, 20, 20, 20);
-                mDialogRootView.addView(devTag);
-            });
-        }
-    }
-
-    private void postShowToast(final String msg) {
+    public void postShowToast(final String msg) {
         postShowToast(msg, null);
     }
 
-    private void postShowToast(final String msg, final DoSthAfterPost doSthAfterPost) {
+    public void postShowToast(final String msg, final DoSthAfterPost doSthAfterPost) {
         runOnUiThread(() -> {
             Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
             if (doSthAfterPost != null) doSthAfterPost.doIt();
         });
     }
+    public void updateUI(Runnable r) {
+        runOnUiThread(r);
+    }
 
     private interface DoSthAfterPost {
         void doIt();
-
     }
 
     public static void BLsend(String str) {
-        mBLESPPUtils.send(str.getBytes());
+//        mBLESPPUtils.send(str.getBytes());
     }
 
     public static void BLsend(byte[] b) {
-        mBLESPPUtils.send(b);
+//        mBLESPPUtils.send(b);
     }
 
     @Override

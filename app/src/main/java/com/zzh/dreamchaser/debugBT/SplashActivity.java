@@ -16,9 +16,9 @@ import com.zzh.dreamchaser.debugBT.databinding.ActivitySplashBinding;
 
 public class SplashActivity extends Activity
 {
-    int SPLASH_TIME=800;
-    boolean firsttime=true;
-    public static boolean sp=true;
+//    int SPLASH_TIME=800;
+//    boolean firsttime=true;
+//    public static boolean sp=true;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,8 +52,9 @@ public class SplashActivity extends Activity
 
         AlphaAnimation alphaAnimation = new AlphaAnimation(0.0f, 1f);
 
-//        动画的透明时间以毫秒为单位  5000ms
-        alphaAnimation.setDuration(1300);
+        //减小delay以优化启动速度#(滑稽)
+//        alphaAnimation.setDuration(1300);
+        alphaAnimation.setDuration(200);
 
         // 动画关联到_image_logo ImageView组件上
         imageView2.setAnimation(alphaAnimation);

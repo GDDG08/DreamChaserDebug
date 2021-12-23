@@ -142,7 +142,7 @@ public class ScopeActivity extends AppCompatActivity {
         }
 
         private void resetViewport() {
-            if (timeStamp_his.length == 0)
+            if (timeStamp_his == null || timeStamp_his.length == 0)
                 return;
             // Reset viewport height range to (0,100)
             Viewport v1 = new Viewport(chart.getMaximumViewport());
