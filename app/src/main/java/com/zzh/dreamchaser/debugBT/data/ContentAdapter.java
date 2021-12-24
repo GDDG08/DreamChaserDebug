@@ -16,7 +16,6 @@ import com.zzh.dreamchaser.debugBT.R;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
 import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 
-import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
 
@@ -51,15 +50,17 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         }
     }
 
+    private final Content mContent;
     private Context mContext;
     private MyListView mMyListView;
-    public boolean onScope = false, onHold = false;
+    public boolean onScope = false, onHold = false, pauseShow = false;
 
     private MyItemOnClickListener mMyItemOnClickListener;
 
 
-    public ContentAdapter(Context content, MyListView mlv) {
-        this.mContext = content;
+    public ContentAdapter(Context context, Content mContent, MyListView mlv) {
+        this.mContent = mContent;
+        this.mContext = context;
         this.mMyListView = mlv;
     }
 
@@ -106,6 +107,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
             holder.txt1.setText(data.getTag());
             holder.txt2.setText(data.getStr());
         }
+
+
+        holder.ssv.setContent(mContent);
 //        temp++;
 
 

@@ -5,7 +5,6 @@ import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
 public class Var {
@@ -17,7 +16,7 @@ public class Var {
 //    Float = 4,
 //    Char = 5
 
-
+    final public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char"};
     public int type;
     public String tag;
     public byte[] data = i82Byte(0);
@@ -50,7 +49,7 @@ public class Var {
     }
 
     public String getType() {
-        return mContent.typeLi[type];
+        return typeLi[type];
     }
 
     public String getTag() {

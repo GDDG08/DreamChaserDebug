@@ -58,7 +58,7 @@ public class RecvTask implements Runnable {
                     int startFlagSize = startFlag.length;
                     int stopFlagSize = stopFlag.length;
                     boolean shouldCallOnReceiveBytes = false;
-                    logD("标志位为：" + byte2Hex(stopFlag));
+//                    logD("标志位为：" + byte2Hex(stopFlag));
 
 
                     while (true) {

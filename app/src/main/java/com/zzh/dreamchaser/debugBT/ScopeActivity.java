@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.smarx.notchlib.NotchScreenManager;
+import com.zzh.dreamchaser.debugBT.connect.DeviceList;
+import com.zzh.dreamchaser.debugBT.data.Content;
 import com.zzh.dreamchaser.debugBT.data.Var;
 
 import java.util.ArrayList;
@@ -33,7 +35,6 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.LineChartView;
 
-import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 import static com.zzh.dreamchaser.debugBT.view.SimpleScopeView.MAX_REX;
 
 public class ScopeActivity extends AppCompatActivity {
@@ -53,7 +54,8 @@ public class ScopeActivity extends AppCompatActivity {
 
     public static class ChartholderFragment extends Fragment {
 
-        private int[] watch_list = new int[]{};
+        private int[] watch_list;
+        private Content mContent = DeviceList.targetDevices.get(0).mContent;
 
         private LineChartView chart;
         private LineChartData data;
@@ -132,9 +134,10 @@ public class ScopeActivity extends AppCompatActivity {
                     for (int i = 0; i < watch_list_new.size(); i++)
                         watch_list_new2[i] = watch_list_new.get(i);
                     watch_list = watch_list_new2;
-
-                    processData();
-                    resetViewport();
+                    if (watch_list.length > 0) {
+                        processData();
+                        resetViewport();
+                    }
                 });
                 builder.show();
             });

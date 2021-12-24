@@ -9,11 +9,14 @@ import java.util.List;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
 public class Content {
-    public  String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char"};
     public  ArrayList tagList = new ArrayList();
     public  ArrayList list = new ArrayList();
     public  int dataLen = 0;
 
+    public Content(boolean debug){
+        if (debug)
+            CreatContent_T();
+    }
     public void CreatContent(byte[] data) {
         int num = (data.length - 1) / 20;
         for (int i = 0; i < num; i++) {
@@ -34,7 +37,7 @@ public class Content {
         }
     }
 
-    public void CreatContent_T() {
+    private void CreatContent_T() {
         //test
         list.add(new Var(4, "这里是",fl2Byte(1.1f)));
         tagList.add("test1");

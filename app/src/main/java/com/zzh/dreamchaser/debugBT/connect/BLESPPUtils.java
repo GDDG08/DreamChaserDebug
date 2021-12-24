@@ -65,7 +65,7 @@ public class BLESPPUtils {
 
         void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket);
 
-        void onConnectFailed(String msg);
+        void onConnectFailed(String deviceMac, String msg);
 
         void onReceiveBytes(int id, byte[] bytes);
 

@@ -11,6 +11,8 @@ import android.net.Uri;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.zzh.dreamchaser.debugBT.MainActivity;
+import com.zzh.dreamchaser.debugBT.connect.DeviceHandle;
+import com.zzh.dreamchaser.debugBT.connect.DeviceList;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 
 import java.io.BufferedWriter;
@@ -24,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
 
 public class Logger {
     public boolean onLogging = false;
@@ -94,13 +95,17 @@ public class Logger {
     }
 
     public void runOnCall() {
+
         if (onLogging) {
             try {
-                for (int i = 0; i < mContent.dataLen; i++) {
-                    bw.write(((Var) mContent.list.get(i)).getStr() + "");
-                    if (i != mContent.dataLen - 1)
-                        bw.write(",");
-                }
+                for (DeviceHandle dh : DeviceList.targetDevices)
+                    if (dh.mContent != null)
+                        for (int i = 0; i < dh.mContent.dataLen; i++) {
+                            bw.write(((Var) dh.mContent.list.get(i)).getStr() + "");
+                            if (i != dh.mContent.dataLen - 1)
+                                bw.write(",");
+                        }
+                //Todo:time
                 bw.write("\r\n");
                 bw.flush();
             } catch (Exception e) {
@@ -111,11 +116,11 @@ public class Logger {
 
     public void writeHeader() {
         try {
-            for (int i = 0; i < mContent.dataLen; i++) {
-                bw.write(mContent.tagList.get(i) + "");
-                if (i != mContent.dataLen - 1)
-                    bw.write(",");
-            }
+            for (DeviceHandle dh : DeviceList.targetDevices)
+                if (dh.mContent != null)
+                    for (int i = 0; i < dh.mContent.dataLen; i++) {
+                        bw.write(dh.deviceName+"-"+dh.mContent.tagList.get(i) + ",");
+                    }
             bw.write("\r\n");
             bw.flush();
         } catch (Exception e) {

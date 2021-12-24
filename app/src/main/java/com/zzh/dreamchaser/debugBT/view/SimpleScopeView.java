@@ -2,21 +2,11 @@ package com.zzh.dreamchaser.debugBT.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.TextureView;
-import android.widget.Button;
-import android.widget.SeekBar;
-
-import androidx.annotation.NonNull;
 
 import com.zzh.dreamchaser.debugBT.R;
 import com.zzh.dreamchaser.debugBT.data.Content;
@@ -24,14 +14,6 @@ import com.zzh.dreamchaser.debugBT.data.Var;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.zzh.dreamchaser.debugBT.MainActivity.mContent;
-import static com.zzh.dreamchaser.debugBT.tool.byteCov.byte2Fl;
-import static com.zzh.dreamchaser.debugBT.tool.byteCov.byte2Hex;
-import static com.zzh.dreamchaser.debugBT.tool.byteCov.byte2i16;
-import static com.zzh.dreamchaser.debugBT.tool.byteCov.byte2i32;
-import static com.zzh.dreamchaser.debugBT.tool.byteCov.byte2i8;
-import static com.zzh.dreamchaser.debugBT.tool.byteCov.getFloat4All;
 
 public class SimpleScopeView extends TextureView implements TextureView.SurfaceTextureListener, Runnable {
 
@@ -47,6 +29,8 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
     private volatile boolean isSurfaceReady = false;
     private volatile boolean isRunning = false;
     private volatile int dataPos = -1;
+
+    private Content mContent;
 
     public SimpleScopeView(Context context) {
         super(context);
@@ -105,17 +89,21 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
     public void onSurfaceTextureUpdated(SurfaceTexture arg0) {
     }
 
-    public void start() {
-        if (!isSurfaceReady) {
-            isSurfaceReady = true;
-            new Thread(this).start();
-        }
+    public void setContent(Content content){
+        mContent = content;
     }
 
     public void update(int pos) {
         start();
         dataPos = pos;
         isRunning = true;
+    }
+
+    public void start() {
+        if (!isSurfaceReady) {
+            isSurfaceReady = true;
+            new Thread(this).start();
+        }
     }
 
     public void stop() {

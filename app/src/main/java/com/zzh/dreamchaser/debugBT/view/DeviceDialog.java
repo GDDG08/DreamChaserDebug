@@ -81,7 +81,7 @@ public class DeviceDialog{
         });
         mConnectDeviceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             mConnectDeviceDialog.dismiss();
-            mContext.finish();
+//            mContext.finish();
         });
         mConnectDeviceDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
             mDialogRootView.removeAllViews();

@@ -43,7 +43,7 @@ import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.switch1;
 import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.textView_fps;
 
 import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
-import com.zzh.dreamchaser.debugBT.connect.ConnectLock;
+import com.zzh.dreamchaser.debugBT.connect.DeviceHandle;
 import com.zzh.dreamchaser.debugBT.connect.DeviceList;
 import com.zzh.dreamchaser.debugBT.data.Content;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
@@ -75,12 +75,10 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     boolean first_flag = true;
     public static final String PREFS_NAME = "com.zzh.dreamchaser.debugBT.color";
 
-    public static Content mContent;
     //    public ContentUpdate mContentupdate = new ContentUpdate();
     private static final int UPDATE = 0;
 
     public static Logger mLogger;
-    public static boolean pauseShow = false;
 
     static {
         mLogger = new Logger();
@@ -100,9 +98,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == UPDATE) {
-                MainActivity.onDataUpdate();
-            }
+            DeviceList.targetDevices.get(msg.what).onUIUpdate();
         }
     };
 
@@ -162,39 +158,6 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         mDeviceDialogCtrl = new DeviceDialog(this, mBLESPPUtils);
 
 //        ContentUpdate.start_tim(refresh_task);
-        mContent = new Content();
-        mContent.CreatContent_T();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mBLESPPUtils.onDestroy();
-        mLogger.stop();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (dAdapter != null){
-            if (dAdapter.onScope){
-                pauseShow = true;
-                dAdapter.setOnScope(false,false);
-            }
-        }
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (dAdapter != null){
-            if (pauseShow) {
-                dAdapter.setOnScope(true,false);
-                pauseShow = false;
-            }
-        }
-
     }
 
     private void initPermissions() {
@@ -231,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     public void onFoundDevice(BluetoothDevice device) {
 
 //        Toast.makeText(MainActivity.this, device.getName(),Toast.LENGTH_LONG).show();
-        if (!(device.getName() == null || device.getName().contains("Robo")|| device.getName().contains("RM")))
+        if (!(device.getName() == null || device.getName().contains("Robo") || device.getName().contains("RM")))
             return;
         // 判断是不是重复的
         for (int i = 0; i < mDevicesList.size(); i++) {
@@ -248,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                 postShowToast("开始连接:" + clickDevice.getName());
 //                mLogTv.setText(mLogTv.getText() + "\n" + "开始连接:" + clickDevice.getName());
 //                mBLESPPUtils.connect(clickDevice);
-                DeviceList.connect(clickDevice.getAddress());
+                DeviceList.connect(MainActivity.this, clickDevice.getAddress());
             }
         });
     }
@@ -262,71 +225,30 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 //                mLogTv.setText(
 //                        mLogTv.getText() + "\n连接成功:" + device.getName() + " | " + device.getAddress()
 //                );
-                ConnectLock.HandShake.start();
+//                ConnectLock.HandShake.start();
                 mDeviceDialogCtrl.dismiss();
             }
         });
     }
 
     @Override
-    public void onConnectFailed(String msg) {
+    public void onConnectFailed(String deviceMac, String msg) {
         postShowToast("连接失败:" + msg);
     }
 
-    int count = 0;
-    boolean first_rec = true;
-    boolean onLogging = false;
-
     @Override
     public void onReceiveBytes(int id, byte[] bytes) {
-        if (first_rec) {
-            first_rec = false;
-            return;
-        }
-
-//        Log.e("BLE","Receiving----->"+new String(bytes)+"");
-        Log.e("BLE", "Receiving----->" + count++ + "--" + byte2Hex(bytes) + "");
         switch (bytes[0]) {
-            case (byte) 0xff:
-//                delete(mContent);
-                ConnectLock.HandShake.stop();
-//                Toast.makeText(MainActivity.this,"握手成功",Toast.LENGTH_LONG).show();
-                mContent = new Content();
-                mContent.CreatContent(bytes);
-                onLogging = true;
-//                ContentUpdate.start_tim(refresh_task);
-                mLogger.writeHeader();
-                BLsend(i82Byte(0xf1));
-                break;
             case (byte) 0x01:
             case (byte) 0x02:
             case (byte) 0x03:
-                if (onLogging) {
-                    mContent.Update(bytes);
-                    mLogger.runOnCall();
-                    Message msg = new Message();
-                    msg.what = UPDATE;
-                    handler.sendMessage(msg);
-//                    runOnUiThread(new ContentUpdate());
-                }
+            default:
+                mLogger.runOnCall();
+                Message msg = new Message();
+                msg.what = id;
+                handler.sendMessage(msg);
                 break;
         }
-    }
-
-    private static long time_fps = new Date().getTime();
-    private static int count_fps = 0;
-
-    public static void onDataUpdate() {
-        count_fps++;
-        if (count_fps > 100) {
-            long time_now = new Date().getTime();
-            textView_fps.setText((float) 1000 * count_fps / (time_now - time_fps) + "");
-            count_fps = 0;
-            time_fps = time_now;
-        }
-        dAdapter.onUpDate();
-
-//        lvd.postInvalidate();
     }
 
     @Override
@@ -349,20 +271,10 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             if (doSthAfterPost != null) doSthAfterPost.doIt();
         });
     }
-    public void updateUI(Runnable r) {
-        runOnUiThread(r);
-    }
+
 
     private interface DoSthAfterPost {
         void doIt();
-    }
-
-    public static void BLsend(String str) {
-//        mBLESPPUtils.send(str.getBytes());
-    }
-
-    public static void BLsend(byte[] b) {
-//        mBLESPPUtils.send(b);
     }
 
     @Override
@@ -385,5 +297,60 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                 PlaceholderFragment.textView_file.setText(filename[filename.length - 1]);
             }
         }
+    }
+
+    private static Boolean isExit = false;
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        Timer tExit = null;
+        if (isExit == false) {
+            isExit = true; // 准备退出
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+            tExit = new Timer();
+            tExit.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isExit = false;
+                }
+            }, 2000);
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        mBLESPPUtils.onDestroy();
+        mLogger.stop();
+        DeviceList.removeAll();
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        for (DeviceHandle dh : DeviceList.targetDevices)
+            if (dh.dAdapter != null)
+                if (dh.dAdapter.onScope) {
+                    dh.dAdapter.setOnScope(false, false);
+                    dh.dAdapter.pauseShow = true;
+                }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        for (DeviceHandle dh : DeviceList.targetDevices)
+            if (dh.dAdapter != null)
+                if (dh.dAdapter.pauseShow) {
+                    dh.dAdapter.setOnScope(true, false);
+                    dh.dAdapter.pauseShow = false;
+                }
     }
 }

@@ -58,23 +58,31 @@
                 android:layout_weight="1"
                 android:text="Refresh" />
 
-            <TextView
-                android:id="@+id/textView_fps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:text="FPS"
-                android:textColor="@color/white" />
-
-            <com.zzh.dreamchaser.debugBT.view.MyListView
-                android:id="@+id/ListView_Data"
+            <LinearLayout
+                android:id="@+id/page1Root"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:paddingBottom="20dp">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            </com.zzh.dreamchaser.debugBT.view.MyListView>
+<!--                <TextView-->
+<!--                    android:id="@+id/textView_fps"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_marginTop="30dp"-->
+<!--                    android:text="FPS"-->
+<!--                    android:textColor="@color/white" />-->
+
+<!--                <com.zzh.dreamchaser.debugBT.view.MyListView-->
+<!--                    android:id="@+id/ListView_Data"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:paddingBottom="20dp">-->
+
+<!--                </com.zzh.dreamchaser.debugBT.view.MyListView>-->
+            </LinearLayout>
 
 
         </LinearLayout>

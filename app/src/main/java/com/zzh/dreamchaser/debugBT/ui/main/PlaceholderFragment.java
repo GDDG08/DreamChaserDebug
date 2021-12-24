@@ -1,61 +1,34 @@
 package com.zzh.dreamchaser.debugBT.ui.main;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.OrientationHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.zzh.dreamchaser.debugBT.CustomActivity;
 import com.zzh.dreamchaser.debugBT.MainActivity;
-import com.zzh.dreamchaser.debugBT.ScopeActivity;
-import com.zzh.dreamchaser.debugBT.SplashActivity;
 import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
 import com.zzh.dreamchaser.debugBT.connect.DeviceHandle;
 import com.zzh.dreamchaser.debugBT.connect.DeviceList;
-import com.zzh.dreamchaser.debugBT.connect.RecvTask;
-import com.zzh.dreamchaser.debugBT.connect.TestRun;
-import com.zzh.dreamchaser.debugBT.connect.TestTask;
 import com.zzh.dreamchaser.debugBT.data.ContentAdapter;
-//import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
-import com.zzh.dreamchaser.debugBT.data.Logger;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
-import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static android.content.Context.MODE_PRIVATE;
-import static com.zzh.dreamchaser.debugBT.MainActivity.BLsend;
 import static com.zzh.dreamchaser.debugBT.MainActivity.mLogger;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
@@ -69,7 +42,7 @@ public class PlaceholderFragment extends Fragment {
     private PageViewModel pageViewModel;
 
     private FragmentMainBinding binding;
-    private Fragment1Binding binding1;
+    public static Fragment1Binding binding1;
     public static Fragment2Binding binding2;
 
     public static final int Page_Info = 1;
@@ -82,10 +55,6 @@ public class PlaceholderFragment extends Fragment {
     public static TextView textView_file;
     public static Switch switch1;
     public static Switch switch2;
-
-    DeviceList mDeviceList = new DeviceList();
-    ExecutorService executorService = Executors.newScheduledThreadPool(2);
-
 
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = new PlaceholderFragment();
@@ -133,75 +102,77 @@ public class PlaceholderFragment extends Fragment {
                         }
                     }
                 });
-                textView_fps = binding1.textViewFps;
+//                textView_fps = binding1.textViewFps;
                 textView_file = binding1.textViewFile;
                 textView_file.setOnClickListener((v) -> {
                     Toast.makeText(getContext(), mLogger.file + "\n饼：这里应该是点按打开，长按分享", Toast.LENGTH_SHORT).show();
                 });
 
-//                new ContentUpdate().start();
                 switch2 = binding1.switch2;
                 switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        dAdapter.setOnScope(isChecked, true);
+                        for (DeviceHandle device : DeviceList.targetDevices)
+                            if (device.dAdapter != null)
+                                device.dAdapter.setOnScope(isChecked, true);
 //                        dAdapter.notifyDataSetChanged();
 //                        lvd.postInvalidate();
                     }
                 });
                 binding1.refresh.setOnClickListener((v) -> {
-                    MainActivity.onDataUpdate();
+                    for (DeviceHandle deviceHandle : DeviceList.targetDevices)
+                        deviceHandle.onUIUpdate();
                 });
-
-                lvd = binding1.ListViewData;
-//                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() );
-//                //设置布局管理器
+                DeviceList.demo(getActivity(),"DEMO");
+//                lvd = binding1.ListViewData;
+////                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() );
+////                //设置布局管理器
+////
+////                //设置为垂直布局，这也是默认的
+////                layoutManager.setOrientation(RecyclerView.VERTICAL);
+//                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
+//                        RecyclerView.VERTICAL, false) {
+//                    @Override
+//                    public boolean canScrollVertically() {
+//                        return false;
+//                    }
+//                };
+//                lvd.setLayoutManager(layoutManager);
+//                dAdapter = new ContentAdapter(getContext(),((MainActivity)getActivity()).mContent, lvd);
+////                lvd.setDivider(null);
+//                dAdapter.setItemOnClickListener((v, pos) -> {
+//                    if (dAdapter.onScope && pos % 2 == 1) {
+//                        Intent intent = new Intent(getActivity(), ScopeActivity.class);
+//                        intent.putExtra("watch_list", new int[]{pos / 2});
+//                        startActivity(intent);
+//                    }
+//                });
+//                lvd.setAdapter(dAdapter);
 //
-//                //设置为垂直布局，这也是默认的
-//                layoutManager.setOrientation(RecyclerView.VERTICAL);
-                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
-                        RecyclerView.VERTICAL, false) {
-                    @Override
-                    public boolean canScrollVertically() {
-                        return false;
-                    }
-                };
-                lvd.setLayoutManager(layoutManager);
-                dAdapter = new ContentAdapter(getContext(), lvd);
-//                lvd.setDivider(null);
-                dAdapter.setItemOnClickListener((v, pos) -> {
-                    if (dAdapter.onScope && pos % 2 == 1) {
-                        Intent intent = new Intent(getActivity(), ScopeActivity.class);
-                        intent.putExtra("watch_list", new int[]{pos / 2});
-                        startActivity(intent);
-                    }
-                });
-                lvd.setAdapter(dAdapter);
-
-
-                DefaultItemAnimator itemAni = new DefaultItemAnimator() {
-                    @Override
-                    public void onAddStarting(RecyclerView.ViewHolder item) {
-                        super.onAddStarting(item);
-                        dAdapter.onHold = true;
-                    }
-
-                    @Override
-                    public void onAddFinished(RecyclerView.ViewHolder item) {
-                        super.onAddFinished(item);
-                        dAdapter.onHold = false;
-                    }
-
-                    @Override
-                    public void onAnimationFinished(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
-                        super.onAnimationFinished(viewHolder);
+//
+//                DefaultItemAnimator itemAni = new DefaultItemAnimator() {
+//                    @Override
+//                    public void onAddStarting(RecyclerView.ViewHolder item) {
+//                        super.onAddStarting(item);
+//                        dAdapter.onHold = true;
+//                    }
+//
+//                    @Override
+//                    public void onAddFinished(RecyclerView.ViewHolder item) {
+//                        super.onAddFinished(item);
 //                        dAdapter.onHold = false;
-                    }
-                };
-                itemAni.setChangeDuration(0);
-//                itemAni.setMoveDuration(0);
-                itemAni.setSupportsChangeAnimations(false);
-                lvd.setItemAnimator(itemAni);
+//                    }
+//
+//                    @Override
+//                    public void onAnimationFinished(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+//                        super.onAnimationFinished(viewHolder);
+////                        dAdapter.onHold = false;
+//                    }
+//                };
+//                itemAni.setChangeDuration(0);
+////                itemAni.setMoveDuration(0);
+//                itemAni.setSupportsChangeAnimations(false);
+//                lvd.setItemAnimator(itemAni);
 
 
                 break;
@@ -241,7 +212,7 @@ public class PlaceholderFragment extends Fragment {
                         System.arraycopy(fl2Byte(1 + (float) (seekBar2.getProgress() - 500) / 2500), 0, temp, 5, 4);
                         System.arraycopy(fl2Byte(1 + (float) (seekBar3.getProgress() - 500) / 2500), 0, temp, 9, 4);
                         System.arraycopy(fl2Byte(1 + (float) (seekBar4.getProgress() - 500) / 2500), 0, temp, 13, 4);
-                        BLsend(temp);
+//                        BLsend(temp);
                         Log.d("COMPENSATE:-->", byte2Hex(temp));
                     }
 
@@ -258,15 +229,6 @@ public class PlaceholderFragment extends Fragment {
                 seekBar3.setOnSeekBarChangeListener(listener);
                 seekBar4.setOnSeekBarChangeListener(listener);
 
-
-//                TestRun tr1 = new TestRun("FIR");
-//                Thread tt1 = new Thread(tr1);
-//                tt1.run();
-//                TestRun tr2 = new TestRun("DER");
-//                Thread tt2 = new Thread(tr2);
-//                tt2.run();
-
-
                 BLESPPUtils.OnBluetoothAction oba = new BLESPPUtils.OnBluetoothAction() {
                     @Override
                     public void onFoundDevice(BluetoothDevice device) {
@@ -281,9 +243,21 @@ public class PlaceholderFragment extends Fragment {
                     }
 
                     @Override
-                    public void onConnectFailed(String msg) {
+                    public void onConnectFailed(String deviceMac, String msg) {
                         Log.d("DOUBLE", "连接失败！" + msg);
                         ((MainActivity) getActivity()).postShowToast(msg);
+                        mLogger.writeHeader();
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("是否重连")
+                                .setMessage(msg)
+                                .setNegativeButton("取消", (view, which) -> {
+                                    DeviceList.removeDevice(deviceMac);
+//                                    DeviceList.targetDevices.remove(DeviceList.getDeviceHandle(deviceMac));
+                                })
+                                .setPositiveButton("重试", (view, which) -> {
+                                    DeviceList.getDeviceHandle(deviceMac).connect();
+                                })
+                                .show();
                     }
 
                     @Override
@@ -295,6 +269,8 @@ public class PlaceholderFragment extends Fragment {
                             else if (id == 1)
                                 binding2.textView3.setText(new String(bytes));
                         });
+                        DeviceList.targetDevices.get(id).onUIUpdate();
+                        mLogger.runOnCall();
                     }
 
                     @Override
@@ -315,15 +291,11 @@ public class PlaceholderFragment extends Fragment {
 //                mBLESPPUtils.onCreate();
 
                 binding2.button3.setOnClickListener((v) -> {
-//                    ExecutorService executorService2 = Executors.newScheduledThreadPool(2);
-//
-//                    executorService2.submit(new TestRun("FIR"));
-//                    executorService2.submit(new TestRun("DEC"));
 
-                    DeviceList.connect("98:D3:61:FD:33:2D");
+                    DeviceList.connect(getActivity(), "98:D3:61:FD:33:2D");
                 });
                 binding2.button4.setOnClickListener((v) -> {
-                    DeviceList.connect("00:21:13:00:71:C3");
+                    DeviceList.connect(getActivity(), "00:21:13:00:71:C3");
                 });
                 break;
             default:
