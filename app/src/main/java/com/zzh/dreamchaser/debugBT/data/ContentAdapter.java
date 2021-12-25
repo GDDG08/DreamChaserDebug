@@ -1,6 +1,7 @@
 package com.zzh.dreamchaser.debugBT.data;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,7 +142,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
 
     public void setOnScope(boolean set, boolean hold) {
         if (set != onScope) {
-            onHold = hold;
+            onHold = hold && set;
             onScope = set;
             for (int i = 0; i < mContent.dataLen; i++) {
                 if (set) {
@@ -159,6 +160,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     }
 
     public void onUpDate() {
+//        Log.d("onHold", onHold+"");
         if (!onHold) {
             if (onScope) {
                 for (int i = 0; i < mContent.dataLen; i++) {

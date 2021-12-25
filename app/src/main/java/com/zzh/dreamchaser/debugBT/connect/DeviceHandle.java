@@ -85,7 +85,8 @@ public class DeviceHandle {
                 case (byte) 0x01:
                 case (byte) 0x02:
                 case (byte) 0x03:
-                    mContent.Update(bytes);
+                    if (hasUI)
+                        mContent.Update(bytes);
                 default:
                     onBluetoothAction.onReceiveBytes(id, bytes);
                     break;
@@ -223,7 +224,7 @@ public class DeviceHandle {
             @Override
             public void onAnimationFinished(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
                 super.onAnimationFinished(viewHolder);
-//                        dAdapter.onHold = false;
+//                dAdapter.onHold = false;
             }
         };
         itemAni.setChangeDuration(0);

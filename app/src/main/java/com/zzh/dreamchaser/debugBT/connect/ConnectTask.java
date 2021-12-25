@@ -52,7 +52,7 @@ public class ConnectTask implements Runnable {
                 connectException.printStackTrace();
                 logD("连接失败:" + connectException.getMessage());
 //                    onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
-                onDeviceConnectAction.onConnectFailed("超时，正在重试……");
+//                onDeviceConnectAction.onConnectFailed("超时，正在重试……");
 //                    return null;
             }
         }

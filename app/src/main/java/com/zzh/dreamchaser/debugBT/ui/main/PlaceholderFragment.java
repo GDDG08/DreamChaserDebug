@@ -124,56 +124,6 @@ public class PlaceholderFragment extends Fragment {
                         deviceHandle.onUIUpdate();
                 });
                 DeviceList.demo(getActivity(),"DEMO");
-//                lvd = binding1.ListViewData;
-////                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() );
-////                //设置布局管理器
-////
-////                //设置为垂直布局，这也是默认的
-////                layoutManager.setOrientation(RecyclerView.VERTICAL);
-//                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
-//                        RecyclerView.VERTICAL, false) {
-//                    @Override
-//                    public boolean canScrollVertically() {
-//                        return false;
-//                    }
-//                };
-//                lvd.setLayoutManager(layoutManager);
-//                dAdapter = new ContentAdapter(getContext(),((MainActivity)getActivity()).mContent, lvd);
-////                lvd.setDivider(null);
-//                dAdapter.setItemOnClickListener((v, pos) -> {
-//                    if (dAdapter.onScope && pos % 2 == 1) {
-//                        Intent intent = new Intent(getActivity(), ScopeActivity.class);
-//                        intent.putExtra("watch_list", new int[]{pos / 2});
-//                        startActivity(intent);
-//                    }
-//                });
-//                lvd.setAdapter(dAdapter);
-//
-//
-//                DefaultItemAnimator itemAni = new DefaultItemAnimator() {
-//                    @Override
-//                    public void onAddStarting(RecyclerView.ViewHolder item) {
-//                        super.onAddStarting(item);
-//                        dAdapter.onHold = true;
-//                    }
-//
-//                    @Override
-//                    public void onAddFinished(RecyclerView.ViewHolder item) {
-//                        super.onAddFinished(item);
-//                        dAdapter.onHold = false;
-//                    }
-//
-//                    @Override
-//                    public void onAnimationFinished(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
-//                        super.onAnimationFinished(viewHolder);
-////                        dAdapter.onHold = false;
-//                    }
-//                };
-//                itemAni.setChangeDuration(0);
-////                itemAni.setMoveDuration(0);
-//                itemAni.setSupportsChangeAnimations(false);
-//                lvd.setItemAnimator(itemAni);
-
 
                 break;
             case Page_Tools:
@@ -246,7 +196,7 @@ public class PlaceholderFragment extends Fragment {
                     public void onConnectFailed(String deviceMac, String msg) {
                         Log.d("DOUBLE", "连接失败！" + msg);
                         ((MainActivity) getActivity()).postShowToast(msg);
-                        mLogger.writeHeader();
+//                        mLogger.writeHeader();
                         new AlertDialog.Builder(getContext())
                                 .setTitle("是否重连")
                                 .setMessage(msg)
@@ -263,19 +213,13 @@ public class PlaceholderFragment extends Fragment {
                     @Override
                     public void onReceiveBytes(int id, byte[] bytes) {
                         Log.d("Receiving1----->", "设备" + id + ":" + new String(bytes));
-                        ((MainActivity) getActivity()).runOnUiThread(() -> {
-                            if (id == 0)
-                                binding2.textView.setText(new String(bytes));
-                            else if (id == 1)
-                                binding2.textView3.setText(new String(bytes));
-                        });
                         DeviceList.targetDevices.get(id).onUIUpdate();
                         mLogger.runOnCall();
                     }
 
                     @Override
                     public void onSendBytes(int id, byte[] bytes) {
-
+                        Log.d("Senidng--->", byte2Hex(bytes));
                     }
 
                     @Override
@@ -284,19 +228,7 @@ public class PlaceholderFragment extends Fragment {
                     }
                 };
                 DeviceList.setOnBluetoothAction(oba);
-//                BLESPPUtils mBLESPPUtils = new BLESPPUtils(getActivity(), oba);
-//
-//                if (!mBLESPPUtils.isBluetoothEnable())
-//                    mBLESPPUtils.enableBluetooth();
-//                mBLESPPUtils.onCreate();
 
-                binding2.button3.setOnClickListener((v) -> {
-
-                    DeviceList.connect(getActivity(), "98:D3:61:FD:33:2D");
-                });
-                binding2.button4.setOnClickListener((v) -> {
-                    DeviceList.connect(getActivity(), "00:21:13:00:71:C3");
-                });
                 break;
             default:
                 break;
