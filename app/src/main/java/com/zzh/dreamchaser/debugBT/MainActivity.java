@@ -3,6 +3,7 @@ package com.zzh.dreamchaser.debugBT;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
@@ -17,7 +18,6 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
@@ -83,24 +83,14 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     static {
         mLogger = new Logger();
     }
-//    private TimerTask refresh_task = new TimerTask() {
-//        @Override
-//        public void run() {
-//            runOnUiThread(()->{
-//                dAdapter.notifyDataSetChanged();
-//                lvd.postInvalidate();
-//            });
-//        }
-//
-//    };
 
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            DeviceList.targetDevices.get(msg.what).onUIUpdate();
-        }
-    };
+//    @SuppressLint("HandlerLeak")
+//    private Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            DeviceList.targetDevices.get(msg.what).onUIUpdate();
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,8 +146,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         if (!mBLESPPUtils.isBluetoothEnable()) mBLESPPUtils.enableBluetooth();
         mBLESPPUtils.onCreate();
         mDeviceDialogCtrl = new DeviceDialog(this, mBLESPPUtils);
-
-//        ContentUpdate.start_tim(refresh_task);
+        DeviceList.setOnBluetoothAction(this);
     }
 
     private void initPermissions() {
@@ -218,35 +207,48 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
-        postShowToast("连接成功", new DoSthAfterPost() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void doIt() {
-//                mLogTv.setText(
-//                        mLogTv.getText() + "\n连接成功:" + device.getName() + " | " + device.getAddress()
-//                );
-//                ConnectLock.HandShake.start();
-                mDeviceDialogCtrl.dismiss();
-            }
+        Log.d("DOUBLE", "连接成功" + device.getName() + device.getAddress());
+        postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!", () -> {
+//            mDeviceDialogCtrl.dismiss();
         });
     }
 
     @Override
     public void onConnectFailed(String deviceMac, String msg) {
         postShowToast("连接失败:" + msg);
+        postShowToast(msg, () -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("是否重连")
+                    .setMessage(msg)
+                    .setNegativeButton("取消", (view, which) -> {
+                        DeviceList.removeDevice(deviceMac);
+//                                    DeviceList.targetDevices.remove(DeviceList.getDeviceHandle(deviceMac));
+                    })
+                    .setPositiveButton("重试", (view, which) -> {
+                        DeviceList.getDeviceHandle(deviceMac).connect();
+                    })
+                    .show();
+        });
+
     }
 
     @Override
     public void onReceiveBytes(int id, byte[] bytes) {
+        Log.d("Receiving1----->", "设备" + id + ":" + new String(bytes));
         switch (bytes[0]) {
+            case (byte) 0xff:
+
+                break;
             case (byte) 0x01:
             case (byte) 0x02:
             case (byte) 0x03:
             default:
                 mLogger.runOnCall();
-                Message msg = new Message();
-                msg.what = id;
-                handler.sendMessage(msg);
+//                Message msg = new Message();
+//                msg.what = id;
+//                handler.sendMessage(msg);
+                DeviceList.targetDevices.get(id).onUIUpdate();
+
                 break;
         }
     }

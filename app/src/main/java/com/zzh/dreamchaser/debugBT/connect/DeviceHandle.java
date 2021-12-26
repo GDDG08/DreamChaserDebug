@@ -192,7 +192,7 @@ public class DeviceHandle {
             }
         };
         lvd.setLayoutManager(layoutManager);
-        dAdapter = new ContentAdapter(activity, mContent, lvd);
+        dAdapter = new ContentAdapter(activity, this, lvd);
         dAdapter.setItemOnClickListener((v, pos) -> {
             if (dAdapter.onScope && pos % 2 == 1) {
                 Intent intent = new Intent(activity, ScopeActivity.class);
@@ -209,23 +209,21 @@ public class DeviceHandle {
 //        lvdRl.setMarginEnd(20);
         lvd.setLayoutParams(lvdRl);
         DefaultItemAnimator itemAni = new DefaultItemAnimator() {
+
             @Override
             public void onAddStarting(RecyclerView.ViewHolder item) {
                 super.onAddStarting(item);
-                dAdapter.onHold = true;
+                dAdapter.onHold = false;
+//                logD("ANI--->onAddStarting");
             }
 
             @Override
             public void onAddFinished(RecyclerView.ViewHolder item) {
                 super.onAddFinished(item);
                 dAdapter.onHold = false;
+//                logD("ANI--->onAddFinished");
             }
 
-            @Override
-            public void onAnimationFinished(@NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
-                super.onAnimationFinished(viewHolder);
-//                dAdapter.onHold = false;
-            }
         };
         itemAni.setChangeDuration(0);
         itemAni.setSupportsChangeAnimations(false);
@@ -251,6 +249,7 @@ public class DeviceHandle {
     }
 
     public void onUIUpdate() {
+//        dAdapter.setContent(mContent);
         count_fps++;
         if (hasUI)
             activity.runOnUiThread(() -> {

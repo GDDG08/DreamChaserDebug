@@ -11,13 +11,19 @@ public class HandShake {
     public HandShake(DeviceHandle dh) {
         thread = new Thread(() -> {
             while (running) {
+                Log.d("Connect:", dh.deviceName + "尝试握手");
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Log.d("Connect:", dh.deviceName + "尝试握手");
-//                dh.sendData(i82Byte(0xf2));
+
+                dh.sendData(i82Byte(0xf2));
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 dh.sendData(i82Byte(0xff));
 
             }

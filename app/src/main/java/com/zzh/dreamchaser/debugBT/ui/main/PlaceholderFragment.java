@@ -179,55 +179,55 @@ public class PlaceholderFragment extends Fragment {
                 seekBar3.setOnSeekBarChangeListener(listener);
                 seekBar4.setOnSeekBarChangeListener(listener);
 
-                BLESPPUtils.OnBluetoothAction oba = new BLESPPUtils.OnBluetoothAction() {
-                    @Override
-                    public void onFoundDevice(BluetoothDevice device) {
-
-                    }
-
-                    @Override
-                    public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
-//                        BLESPPUtils.RecvTask recvTask = new BLESPPUtils.RecvTask(mBLESPPUtils1.on)socket)
-                        Log.d("DOUBLE", "连接成功" + device.getName() + device.getAddress());
-                        ((MainActivity) getActivity()).postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!");
-                    }
-
-                    @Override
-                    public void onConnectFailed(String deviceMac, String msg) {
-                        Log.d("DOUBLE", "连接失败！" + msg);
-                        ((MainActivity) getActivity()).postShowToast(msg);
-//                        mLogger.writeHeader();
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("是否重连")
-                                .setMessage(msg)
-                                .setNegativeButton("取消", (view, which) -> {
-                                    DeviceList.removeDevice(deviceMac);
-//                                    DeviceList.targetDevices.remove(DeviceList.getDeviceHandle(deviceMac));
-                                })
-                                .setPositiveButton("重试", (view, which) -> {
-                                    DeviceList.getDeviceHandle(deviceMac).connect();
-                                })
-                                .show();
-                    }
-
-                    @Override
-                    public void onReceiveBytes(int id, byte[] bytes) {
-                        Log.d("Receiving1----->", "设备" + id + ":" + new String(bytes));
-                        DeviceList.targetDevices.get(id).onUIUpdate();
-                        mLogger.runOnCall();
-                    }
-
-                    @Override
-                    public void onSendBytes(int id, byte[] bytes) {
-                        Log.d("Senidng--->", byte2Hex(bytes));
-                    }
-
-                    @Override
-                    public void onFinishFoundDevice() {
-
-                    }
-                };
-                DeviceList.setOnBluetoothAction(oba);
+//                BLESPPUtils.OnBluetoothAction oba = new BLESPPUtils.OnBluetoothAction() {
+//                    @Override
+//                    public void onFoundDevice(BluetoothDevice device) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
+////                        BLESPPUtils.RecvTask recvTask = new BLESPPUtils.RecvTask(mBLESPPUtils1.on)socket)
+//                        Log.d("DOUBLE", "连接成功" + device.getName() + device.getAddress());
+//                        ((MainActivity) getActivity()).postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!");
+//                    }
+//
+//                    @Override
+//                    public void onConnectFailed(String deviceMac, String msg) {
+//                        Log.d("DOUBLE", "连接失败！" + msg);
+//                        ((MainActivity) getActivity()).postShowToast(msg);
+////                        mLogger.writeHeader();
+//                        new AlertDialog.Builder(getContext())
+//                                .setTitle("是否重连")
+//                                .setMessage(msg)
+//                                .setNegativeButton("取消", (view, which) -> {
+//                                    DeviceList.removeDevice(deviceMac);
+////                                    DeviceList.targetDevices.remove(DeviceList.getDeviceHandle(deviceMac));
+//                                })
+//                                .setPositiveButton("重试", (view, which) -> {
+//                                    DeviceList.getDeviceHandle(deviceMac).connect();
+//                                })
+//                                .show();
+//                    }
+//
+//                    @Override
+//                    public void onReceiveBytes(int id, byte[] bytes) {
+//                        Log.d("Receiving1----->", "设备" + id + ":" + new String(bytes));
+//                        DeviceList.targetDevices.get(id).onUIUpdate();
+//                        mLogger.runOnCall();
+//                    }
+//
+//                    @Override
+//                    public void onSendBytes(int id, byte[] bytes) {
+//                        Log.d("Senidng--->", byte2Hex(bytes));
+//                    }
+//
+//                    @Override
+//                    public void onFinishFoundDevice() {
+//
+//                    }
+//                };
+//                DeviceList.setOnBluetoothAction(oba);
 
                 break;
             default:

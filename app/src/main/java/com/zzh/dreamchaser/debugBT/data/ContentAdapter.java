@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zzh.dreamchaser.debugBT.MainActivity;
 import com.zzh.dreamchaser.debugBT.R;
+import com.zzh.dreamchaser.debugBT.connect.DeviceHandle;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
 import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 
@@ -21,10 +22,10 @@ import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final LinearLayout txt;
-        public final ConstraintLayout scope_area;
-        public final TextView txt1, txt2, scope_txt1, scope_txt2, scope_txt3;
-        public final SimpleScopeView ssv;
+        public LinearLayout txt;
+        public ConstraintLayout scope_area;
+        public TextView txt1, txt2, scope_txt1, scope_txt2, scope_txt3;
+        public SimpleScopeView ssv;
 
         MyItemOnClickListener mListener;
 
@@ -51,7 +52,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         }
     }
 
-    private final Content mContent;
+//    private Content mContent;
+    private DeviceHandle deviceHandle;
     private Context mContext;
     private MyListView mMyListView;
     public boolean onScope = false, onHold = false, pauseShow = false;
@@ -59,11 +61,15 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     private MyItemOnClickListener mMyItemOnClickListener;
 
 
-    public ContentAdapter(Context context, Content mContent, MyListView mlv) {
-        this.mContent = mContent;
+    public ContentAdapter(Context context, DeviceHandle deviceHandle, MyListView mlv) {
+        this.deviceHandle = deviceHandle;
         this.mContext = context;
         this.mMyListView = mlv;
     }
+
+//    public void setContent(Content mContent) {
+//        this.mContent = mContent;
+//    }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -91,7 +97,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 holder.txt.setVisibility(View.VISIBLE);
                 holder.scope_area.setVisibility(View.GONE);
                 holder.ssv.stop();
-                Var data = (Var) mContent.list.get(position / 2);
+                Var data = (Var) deviceHandle.mContent.list.get(position / 2);
                 holder.txt1.setText(data.getTag());
                 holder.txt2.setText(data.getStr());
             } else {
@@ -104,13 +110,13 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
             holder.txt.setVisibility(View.VISIBLE);
             holder.scope_area.setVisibility(View.GONE);
             holder.ssv.stop();
-            Var data = (Var) mContent.list.get(position);
+            Var data = (Var) deviceHandle.mContent.list.get(position);
             holder.txt1.setText(data.getTag());
             holder.txt2.setText(data.getStr());
         }
 
 
-        holder.ssv.setContent(mContent);
+        holder.ssv.setContent(deviceHandle.mContent);
 //        temp++;
 
 
@@ -126,9 +132,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     @Override
     public int getItemCount() {
         if (onScope)
-            return 2 * mContent.dataLen;
+            return 2 * deviceHandle.mContent.dataLen;
         else
-            return mContent.dataLen;
+            return deviceHandle.mContent.dataLen;
 //        return Content.dataLen + Len4SSV;
 //        return 3;
     }
@@ -144,7 +150,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         if (set != onScope) {
             onHold = hold && set;
             onScope = set;
-            for (int i = 0; i < mContent.dataLen; i++) {
+            for (int i = 0; i < deviceHandle.mContent.dataLen; i++) {
                 if (set) {
 //                    Len4SSV++;
                     notifyItemInserted(2 * i + 1);
@@ -160,10 +166,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     }
 
     public void onUpDate() {
-//        Log.d("onHold", onHold+"");
+        Log.d("onHold", onHold+"");
         if (!onHold) {
             if (onScope) {
-                for (int i = 0; i < mContent.dataLen; i++) {
+                for (int i = 0; i < deviceHandle.mContent.dataLen; i++) {
                     notifyItemChanged(i * 2);
 //                getItem(2*i+1);
 //                dAdapter.ssv.update();
