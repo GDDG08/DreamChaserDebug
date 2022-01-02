@@ -6,7 +6,7 @@
 
 **欢迎`提issue反馈问题、许愿新功能，star` or `pull request`**
 
-<img src="demo\splash.jpg" alt="splash" style="zoom: 15%;" /><img src="demo\permission1.jpg" alt="permission1" style="zoom:15%;" /><img src="demo\permission2.jpg" alt="permission2" style="zoom:15%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\splash.jpg" alt="splash" style="zoom: 15%;" /><img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\permission1.jpg" alt="permission1" style="zoom:15%;" /><img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\permission2.jpg" alt="permission2" style="zoom:15%;" />
 
 ------
 
@@ -60,11 +60,11 @@
 
 连接过程中如果失败会自动重试，请耐心等待
 
-<img src="D:\@Projects\AndroidStudio\DreamChaserDebug\demo\Connect.jpg" alt="Connect" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\Connect.jpg" alt="Connect" style="zoom:25%;" />
 
 断连后会出现弹窗提示，可以重连
 
-<img src="demo\reConnect.jpg" alt="reConnect" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\reConnect.jpg" alt="reConnect" style="zoom:25%;" />
 
 
 
@@ -74,7 +74,7 @@
 
 如果长时间首页看板不刷新，请检查蓝牙模块接线状态以及板载代码Uart发送与**接收**是否正常
 
-<img src="demo\multipleDevices.jpg" alt="multipleDevices" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\multipleDevices.jpg" alt="multipleDevices" style="zoom:25%;" />
 
 ### 日志记录
 
@@ -100,7 +100,7 @@
 
 请注意，首页的实时示波器仅作参考，由于蓝牙缓冲机制导致接收时间频率不同，该图像的时间轴并不严谨。
 
-<img src="demo\simpleScope.jpg" alt="simpleScope" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\simpleScope.jpg" alt="simpleScope" style="zoom:25%;" />
 
 
 
@@ -112,7 +112,7 @@
 
 右下角浮动按钮可用于重新选择监看变量，当前最多添加五个
 
-<img src="demo\scopeActivity.jpg" alt="scopeActivity" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\scopeActivity.jpg" alt="scopeActivity" style="zoom:25%;" />
 
 ###### 步兵飞坡左前轮编码器反馈值（采样90Hz）
 
@@ -132,7 +132,7 @@
 
 现在是无法自定义的：
 
-<img src="demo\Debug.jpg" alt="Debug" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\Debug.jpg" alt="Debug" style="zoom:25%;" />
 
 
 
@@ -140,7 +140,7 @@
 
 这个App可以handle不低于30000Hz的数据采样，刷新率上不去是蓝牙数据带宽、板载发送频率的限制
 
-<img src="demo\FPS-limit-test.jpg" alt="FPS-limit-test" style="zoom:25%;" />
+<img src="https://gitee.com\bitrm2022hardware\dream-chaser-debug\raw\master\demo\FPS-limit-test.jpg" alt="FPS-limit-test" style="zoom:25%;" />
 
 ## 贡献
 
