@@ -29,6 +29,7 @@ import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
+
 import static com.zzh.dreamchaser.debugBT.MainActivity.mLogger;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
@@ -123,7 +124,7 @@ public class PlaceholderFragment extends Fragment {
                     for (DeviceHandle deviceHandle : DeviceList.targetDevices)
                         deviceHandle.onUIUpdate();
                 });
-                DeviceList.demo(getActivity(),"DEMO");
+                DeviceList.demo(getActivity(), "DEMO");
 
                 break;
             case Page_Tools:
@@ -178,6 +179,32 @@ public class PlaceholderFragment extends Fragment {
                 seekBar2.setOnSeekBarChangeListener(listener);
                 seekBar3.setOnSeekBarChangeListener(listener);
                 seekBar4.setOnSeekBarChangeListener(listener);
+
+                final SeekBar seekBar5 = binding2.seekBar5;
+                final TextView seekbarText5 = binding2.seekbarText5;
+
+                SeekBar.OnSeekBarChangeListener listener2 = new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (seekBar == seekBar5) {
+                            seekbarText5.setText((10 + 19 * (float) seekBar5.getProgress() / 1000)+"");
+                        }
+                        byte[] temp = new byte[5];
+                        temp[0] = (byte) 0xa1;
+                        System.arraycopy(fl2Byte(10 + 19 * (float) seekBar5.getProgress() / 1000), 0, temp, 1, 4);
+                        Log.d("Supercap:-->", byte2Hex(temp));
+                        DeviceList.targetDevices.get(0).sendData(temp);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                };
+                seekBar5.setOnSeekBarChangeListener(listener2);
 
 //                BLESPPUtils.OnBluetoothAction oba = new BLESPPUtils.OnBluetoothAction() {
 //                    @Override
