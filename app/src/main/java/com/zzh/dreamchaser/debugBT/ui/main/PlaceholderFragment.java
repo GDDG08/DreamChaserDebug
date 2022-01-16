@@ -1,5 +1,6 @@
 package com.zzh.dreamchaser.debugBT.ui.main;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -7,9 +8,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -29,9 +32,14 @@ import com.zzh.dreamchaser.debugBT.databinding.Fragment1Binding;
 import com.zzh.dreamchaser.debugBT.databinding.Fragment2Binding;
 import com.zzh.dreamchaser.debugBT.databinding.FragmentMainBinding;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
+import com.zzh.dreamchaser.debugBT.view.MyScrollView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.zzh.dreamchaser.debugBT.MainActivity.mLogger;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
+import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -76,6 +84,7 @@ public class PlaceholderFragment extends Fragment {
         pageViewModel.setIndex(index);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -86,6 +95,37 @@ public class PlaceholderFragment extends Fragment {
             case Page_Info:
                 binding1 = Fragment1Binding.inflate(inflater, container, false);
                 root = binding1.getRoot();
+
+                MyScrollView mainScroll = binding1.mainScroll;
+                mainScroll.setScrollListener(new MyScrollView.ScrollListener() {
+
+                    Timer tStop = new Timer();
+
+                    @Override
+                    public void onScrollBegin(MyScrollView scrollView) {
+                        for (DeviceHandle dh : DeviceList.targetDevices)
+                            if (dh.dAdapter != null) {
+                                dh.dAdapter.onHold = true;
+
+                                tStop.cancel();
+                                tStop = new Timer();
+                                tStop.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        dh.dAdapter.onHold = false;
+//                                        Log.d("Scroll", "timer");
+                                    }
+                                }, 50);
+                            }
+                    }
+
+                    @Override
+                    public void onScrollStop(MyScrollView scrollView) {
+                        for (DeviceHandle dh : DeviceList.targetDevices)
+                            if (dh.dAdapter != null)
+                                dh.dAdapter.onHold = false;
+                    }
+                });
 
                 switch1 = binding1.switch1;
                 switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -122,9 +162,66 @@ public class PlaceholderFragment extends Fragment {
                 });
                 binding1.refresh.setOnClickListener((v) -> {
                     for (DeviceHandle deviceHandle : DeviceList.targetDevices)
-                        deviceHandle.onUIUpdate();
+                        deviceHandle.sendData(i82Byte(0xf1));
                 });
                 DeviceList.demo(getActivity(), "DEMO");
+
+                final SeekBar seekBar11 = binding1.seekBar11;
+                final TextView seekbarText11 = binding1.seekbarText11;
+                final SeekBar seekBar12 = binding1.seekBar12;
+                final TextView seekbarText12 = binding1.seekbarText12;
+                SeekBar.OnSeekBarChangeListener listener3 = new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        /*if (seekBar == seekBar11) {
+                            seekbarText11.setText((1 + 2 * (float) (seekBar11.getProgress() - 500) / 500) + "");
+                        } else if (seekBar == seekBar12) {
+                            seekbarText12.setText((1 + 2 * (float) (seekBar12.getProgress() - 500) / 500) + "");
+                        }
+                        byte[] temp = new byte[9];
+                        temp[0] = (byte) 0xa8;
+                        System.arraycopy(fl2Byte(1 + 2 * (float) (seekBar11.getProgress() - 500) / 500), 0, temp, 1, 4);
+                        System.arraycopy(fl2Byte(1 + 2 * (float) (seekBar12.getProgress() - 500) / 500), 0, temp, 5, 4);
+
+                        Log.d("CMD_SET_MOTOR_BAIS:-->", byte2Hex(temp));
+                        DeviceList.targetDevices.get(0).sendData(temp);*/
+
+
+                        seekbarText11.setText((0.00020635f + 0.0001 * (float) seekBar11.getProgress() / 1000) + "");
+                        seekbarText12.setText((0.05f + 0.1 * (float) seekBar12.getProgress() / 1000) + "");
+
+                        byte[] temp = new byte[9];
+                        temp[0] = (byte) 0xa8;
+                        System.arraycopy(fl2Byte(0.00020635f + 0.0001f * (float) seekBar11.getProgress() / 1000), 0, temp, 1, 4);
+                        System.arraycopy(fl2Byte(0.05f + 0.1f * (float) seekBar12.getProgress() / 1000), 0, temp, 5, 4);
+
+                        logD("CMD_SET_MOTOR_BAIS:-->" + byte2Hex(temp));
+                        DeviceList.targetDevices.get(0).sendData(temp);
+
+//                        if (seekBar == seekBar11) {
+//                            seekbarText11.setText((0.5 + 0.2 * (float) seekBar11.getProgress() / 1000) + "");
+//                        } else if (seekBar == seekBar12) {
+//                            seekbarText12.setText((0.5 + 0.2 * (float) seekBar12.getProgress() / 1000) + "");
+//                        }
+//                        byte[] temp = new byte[9];
+//                        temp[0] = (byte) 0xa8;
+//                        System.arraycopy(fl2Byte(0.5f + 0.2f * (float) seekBar11.getProgress() / 1000), 0, temp, 1, 4);
+//                        System.arraycopy(fl2Byte(0.5f + 0.2f * (float) seekBar12.getProgress() / 1000), 0, temp, 5, 4);
+//
+//                        Log.d("CMD_SET_MOTOR_BAIS:-->", byte2Hex(temp));
+//                        DeviceList.targetDevices.get(0).sendData(temp);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                };
+                seekBar11.setOnSeekBarChangeListener(listener3);
+                seekBar12.setOnSeekBarChangeListener(listener3);
 
                 break;
             case Page_Tools:
@@ -164,7 +261,7 @@ public class PlaceholderFragment extends Fragment {
                         System.arraycopy(fl2Byte(1 + (float) (seekBar3.getProgress() - 500) / 2500), 0, temp, 9, 4);
                         System.arraycopy(fl2Byte(1 + (float) (seekBar4.getProgress() - 500) / 2500), 0, temp, 13, 4);
 //                        BLsend(temp);
-                        Log.d("COMPENSATE:-->", byte2Hex(temp));
+                        logD("COMPENSATE:-->" + byte2Hex(temp));
                     }
 
                     @Override
@@ -187,12 +284,12 @@ public class PlaceholderFragment extends Fragment {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if (seekBar == seekBar5) {
-                            seekbarText5.setText((10 + 19 * (float) seekBar5.getProgress() / 1000)+"");
+                            seekbarText5.setText((10 + 19 * (float) seekBar5.getProgress() / 1000) + "");
                         }
                         byte[] temp = new byte[5];
                         temp[0] = (byte) 0xa1;
                         System.arraycopy(fl2Byte(10 + 19 * (float) seekBar5.getProgress() / 1000), 0, temp, 1, 4);
-                        Log.d("Supercap:-->", byte2Hex(temp));
+                        logD("Supercap:-->" + byte2Hex(temp));
                         DeviceList.targetDevices.get(0).sendData(temp);
                     }
 
@@ -205,6 +302,75 @@ public class PlaceholderFragment extends Fragment {
                     }
                 };
                 seekBar5.setOnSeekBarChangeListener(listener2);
+
+                final SeekBar seekBar13 = binding2.seekBar13;
+                final TextView seekbarText13 = binding2.seekbarText13;
+                final SeekBar seekBar14 = binding2.seekBar14;
+                final TextView seekbarText14 = binding2.seekbarText14;
+                final SeekBar seekBar15 = binding2.seekBar15;
+                final TextView seekbarText15 = binding2.seekbarText15;
+                final SeekBar seekBar16 = binding2.seekBar16;
+                final TextView seekbarText16 = binding2.seekbarText16;
+                final SeekBar seekBar17 = binding2.seekBar17;
+                final TextView seekbarText17 = binding2.seekbarText17;
+                final SeekBar seekBar18 = binding2.seekBar18;
+                final TextView seekbarText18 = binding2.seekbarText18;
+                final SeekBar seekBar19 = binding2.seekBar19;
+                final TextView seekbarText19 = binding2.seekbarText19;
+                final SeekBar seekBar20 = binding2.seekBar20;
+                final TextView seekbarText20 = binding2.seekbarText20;
+                final SeekBar seekBar21 = binding2.seekBar21;
+                final TextView seekbarText21 = binding2.seekbarText21;
+                SeekBar.OnSeekBarChangeListener listener4 = new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        seekbarText13.setText((0 + 3 * (float) seekBar13.getProgress() / 1000) + "");
+                        seekbarText14.setText((0 + 0.1f * (float) seekBar14.getProgress() / 1000) + "");
+                        seekbarText15.setText((0 + 5 * (float) seekBar15.getProgress() / 1000) + "");
+                        seekbarText16.setText((0 + 3 * (float) seekBar16.getProgress() / 1000) + "");
+                        seekbarText17.setText((0 + 0.1f * (float) seekBar17.getProgress() / 1000) + "");
+                        seekbarText18.setText((0 + 5 * (float) seekBar18.getProgress() / 1000) + "");
+                        seekbarText19.setText((0 + 3 * (float) seekBar19.getProgress() / 1000) + "");
+                        seekbarText20.setText((0 + 0.1f * (float) seekBar20.getProgress() / 1000) + "");
+                        seekbarText21.setText((0 + 5 * (float) seekBar21.getProgress() / 1000) + "");
+
+
+                        byte[] temp = new byte[9];
+                        temp[0] = (byte) 0xa8;
+                        System.arraycopy(fl2Byte(0 + 3 * (float) seekBar13.getProgress() / 1000), 0, temp, 1, 4);
+                        System.arraycopy(fl2Byte(0 + 0.1f * (float) seekBar14.getProgress() / 1000), 0, temp, 5, 4);
+                        System.arraycopy(fl2Byte(0 + 5 * (float) seekBar15.getProgress() / 1000), 0, temp, 9, 4);
+                        System.arraycopy(fl2Byte(0), 0, temp, 13, 4);
+                        System.arraycopy(fl2Byte(0 + 3 * (float) seekBar16.getProgress() / 1000), 0, temp, 17, 4);
+                        System.arraycopy(fl2Byte(0 + 0.1f * (float) seekBar17.getProgress() / 1000), 0, temp, 21, 4);
+                        System.arraycopy(fl2Byte(0 + 5 * (float) seekBar18.getProgress() / 1000), 0, temp, 25, 4);
+                        System.arraycopy(fl2Byte(0), 0, temp, 29, 4);
+                        System.arraycopy(fl2Byte(0 + 3 * (float) seekBar19.getProgress() / 1000), 0, temp, 33, 4);
+                        System.arraycopy(fl2Byte(0 + 0.1f * (float) seekBar20.getProgress() / 1000), 0, temp, 37, 4);
+                        System.arraycopy(fl2Byte(0 + 5 * (float) seekBar21.getProgress() / 1000), 0, temp, 41, 4);
+                        System.arraycopy(fl2Byte(0), 0, temp, 44, 4);
+
+                        logD("CMD_SET_MOTOR_BAIS:-->" + byte2Hex(temp));
+                        DeviceList.targetDevices.get(0).sendData(temp);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                };
+                seekBar13.setOnSeekBarChangeListener(listener4);
+                seekBar14.setOnSeekBarChangeListener(listener4);
+                seekBar15.setOnSeekBarChangeListener(listener4);
+                seekBar16.setOnSeekBarChangeListener(listener4);
+                seekBar17.setOnSeekBarChangeListener(listener4);
+                seekBar18.setOnSeekBarChangeListener(listener4);
+                seekBar19.setOnSeekBarChangeListener(listener4);
+                seekBar20.setOnSeekBarChangeListener(listener4);
+                seekBar21.setOnSeekBarChangeListener(listener4);
 
 //                BLESPPUtils.OnBluetoothAction oba = new BLESPPUtils.OnBluetoothAction() {
 //                    @Override

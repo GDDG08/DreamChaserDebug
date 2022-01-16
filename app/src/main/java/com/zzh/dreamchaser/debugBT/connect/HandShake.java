@@ -3,6 +3,7 @@ package com.zzh.dreamchaser.debugBT.connect;
 import android.util.Log;
 
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.i82Byte;
+import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 
 public class HandShake {
     private Thread thread;
@@ -11,7 +12,7 @@ public class HandShake {
     public HandShake(DeviceHandle dh) {
         thread = new Thread(() -> {
             while (running) {
-                Log.d("Connect:", dh.deviceName + "尝试握手");
+                logD("Connect:" + dh.deviceName + "尝试握手");
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException e) {

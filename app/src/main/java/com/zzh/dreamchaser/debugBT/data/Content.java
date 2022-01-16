@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
+import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 
 public class Content {
     public  ArrayList tagList = new ArrayList();
@@ -68,7 +69,7 @@ public class Content {
             System.arraycopy(data, cur_pos, temp, 0, len);
             ((Var) list.get(i)).setData(temp);
             cur_pos += len;
-            Log.d("RESULT:", ((Var) list.get(i)).getTag() + "-->" + ((Var) list.get(i)).getStr());
+            logD("RESULT:"+ ((Var) list.get(i)).getTag() + "-->" + ((Var) list.get(i)).getStr());
         }
     }
 

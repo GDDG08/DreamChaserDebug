@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.PlaceholderFragment">
 
-    <ScrollView
+    <com.zzh.dreamchaser.debugBT.view.MyScrollView
+        android:id="@+id/main_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="20dp">
@@ -15,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="30dp">
 
 
             <Switch
@@ -56,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="Refresh" />
+                android:text="Reset" />
 
             <LinearLayout
                 android:id="@+id/page1Root"
@@ -66,26 +68,81 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-<!--                <TextView-->
-<!--                    android:id="@+id/textView_fps"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginTop="30dp"-->
-<!--                    android:text="FPS"-->
-<!--                    android:textColor="@color/white" />-->
+                <!--                <TextView-->
+                <!--                    android:id="@+id/textView_fps"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginTop="30dp"-->
+                <!--                    android:text="FPS"-->
+                <!--                    android:textColor="@color/white" />-->
 
-<!--                <com.zzh.dreamchaser.debugBT.view.MyListView-->
-<!--                    android:id="@+id/ListView_Data"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:paddingBottom="20dp">-->
+                <!--                <com.zzh.dreamchaser.debugBT.view.MyListView-->
+                <!--                    android:id="@+id/ListView_Data"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="match_parent"-->
+                <!--                    android:paddingBottom="20dp">-->
 
-<!--                </com.zzh.dreamchaser.debugBT.view.MyListView>-->
+                <!--                </com.zzh.dreamchaser.debugBT.view.MyListView>-->
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="小发射速度微调 LR"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/seekbarText11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seekBar11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:indeterminate="false"
+                    android:max="1000"
+                    android:progress="333" />
+
+                <TextView
+                    android:id="@+id/seekbarText12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seekBar12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:max="1000"
+                    android:progress="333" />
+
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </com.zzh.dreamchaser.debugBT.view.MyScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

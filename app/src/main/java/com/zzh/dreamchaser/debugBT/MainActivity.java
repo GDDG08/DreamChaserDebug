@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
+import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 import static com.zzh.dreamchaser.debugBT.tool.myLog.setEnableLogOut;
 import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.dAdapter;
 import static com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment.lvd;
@@ -111,22 +112,39 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                 //Toast.makeText(MainActivity.this,tab.getPosition()+"",Toast.LENGTH_LONG).show();
                 switch (tab.getPosition()) {
                     case PlaceholderFragment.Page_Info - 1:
+                        for (DeviceHandle dh : DeviceList.targetDevices)
+                            if (dh.dAdapter != null)
+                                dh.dAdapter.onHold = false;
                         break;
                     case PlaceholderFragment.Page_Tools - 1:
-                        if (first_flag) {
-//                            PlaceholderFragment.binding2.radioButton2.setChecked(true);
-                            first_flag = false;
-                        }
                         break;
                 }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case PlaceholderFragment.Page_Info - 1:
+                        for (DeviceHandle dh : DeviceList.targetDevices)
+                            if (dh.dAdapter != null)
+                                dh.dAdapter.onHold = true;
+                        break;
+                    case PlaceholderFragment.Page_Tools - 1:
+                        break;
+                }
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case PlaceholderFragment.Page_Info - 1:
+                        for (DeviceHandle dh : DeviceList.targetDevices)
+                            if (dh.dAdapter != null)
+                                dh.dAdapter.onHold = false;
+                        break;
+                    case PlaceholderFragment.Page_Tools - 1:
+                        break;
+                }
             }
         });
         FloatingActionButton fab = binding.fab;
@@ -141,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
         initPermissions();
         mBLESPPUtils = new BLESPPUtils(MainActivity.this, this);
-        setEnableLogOut();
+//        setEnableLogOut();
 //        mBLESPPUtils.setStopFlag("@\r\n".getBytes());
         if (!mBLESPPUtils.isBluetoothEnable()) mBLESPPUtils.enableBluetooth();
         mBLESPPUtils.onCreate();
@@ -207,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
-        Log.d("DOUBLE", "连接成功" + device.getName() + device.getAddress());
+        logD("DOUBLE"+ "连接成功" + device.getName() + device.getAddress());
         postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!", () -> {
 //            mDeviceDialogCtrl.dismiss();
         });
@@ -234,7 +252,8 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onReceiveBytes(int id, byte[] bytes) {
-        Log.d("Receiving1----->", "设备" + id + ":" + new String(bytes));
+
+        logD("Receiving1----->设备" + id + ":" + new String(bytes));
         switch (bytes[0]) {
             case (byte) 0xff:
 
@@ -255,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onSendBytes(int id, byte[] bytes) {
-        Log.e("BLE", "Sending----->" + byte2Hex(bytes));
+        logD("BLE,Sending----->" + byte2Hex(bytes));
     }
 
     @Override

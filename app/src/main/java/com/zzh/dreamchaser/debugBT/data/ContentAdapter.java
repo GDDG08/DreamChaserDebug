@@ -18,6 +18,11 @@ import com.zzh.dreamchaser.debugBT.connect.DeviceHandle;
 import com.zzh.dreamchaser.debugBT.view.MyListView;
 import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
+
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
 
@@ -52,7 +57,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         }
     }
 
-//    private Content mContent;
+    //    private Content mContent;
     private DeviceHandle deviceHandle;
     private Context mContext;
     private MyListView mMyListView;
@@ -145,7 +150,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_data, parent, false);
         return new ViewHolder(v, mMyItemOnClickListener);
     }
-
+    Timer tStopHold = new Timer();
     public void setOnScope(boolean set, boolean hold) {
         if (set != onScope) {
             onHold = hold && set;
@@ -163,10 +168,21 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
 //                dAdapter.ssv.update();
             }
         }
+
+        if(hold){
+            tStopHold.cancel();
+            tStopHold = new Timer();
+            tStopHold.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    onHold = false;
+                }
+            }, 700);
+        }
     }
 
     public void onUpDate() {
-        Log.d("onHold", onHold+"");
+        logD("onHold" + onHold + "");
         if (!onHold) {
             if (onScope) {
                 for (int i = 0; i < deviceHandle.mContent.dataLen; i++) {

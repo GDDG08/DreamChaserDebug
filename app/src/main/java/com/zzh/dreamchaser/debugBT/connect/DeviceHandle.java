@@ -69,7 +69,7 @@ public class DeviceHandle {
 
         @Override
         public void onReceiveBytes(byte[] bytes) {
-            Log.e("BLE", "Receiving----->" + byte2Hex(bytes) + "");
+            logD("BLE"+ "Receiving----->" + byte2Hex(bytes) + "");
             switch (bytes[0]) {
                 case (byte) 0xff:
                     handShake.stop();
