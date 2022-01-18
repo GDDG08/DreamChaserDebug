@@ -1,5 +1,7 @@
 package com.zzh.dreamchaser.debugBT.tool;
 
+import android.util.Log;
+
 import java.util.Formatter;
 
 public class byteCov {
@@ -47,30 +49,72 @@ public class byteCov {
         return hash;
     }
 
-    public static byte[] i82Byte(int i) {
+    public static byte[] ui82Byte(int i) {
         byte[] result = new byte[1];
         result[0] = (byte) (i & 0xFF);
         return result;
     }
 
-    public static int byte2i8(byte[] bytes) {
-        int value = bytes[0] & 0xFF;
-        return value;
+    public static int byte2ui8(byte[] bytes) {
+        return bytes[0] & 0xFF;
     }
 
-    public static byte[] i162Byte(int i) {
+    public static byte[] ui162Byte(int i) {
         byte[] result = new byte[2];
         result[1] = (byte) ((i >> 8) & 0xFF);
         result[0] = (byte) (i & 0xFF);
         return result;
     }
 
-    public static int byte2i16(byte[] bytes) {
+    public static int byte2ui16(byte[] bytes) {
         int value = 0;
         for (int i = 0; i < 2; i++) {
             int shift = i * 8;
             value += (bytes[i] & 0xFF) << shift;
         }
+        return value;
+    }
+
+    public static byte[] ui322Byte(long i) {
+        byte[] result = new byte[4];
+        result[3] = (byte) ((i >> 24) & 0xFF);
+        result[2] = (byte) ((i >> 16) & 0xFF);
+        result[1] = (byte) ((i >> 8) & 0xFF);
+        result[0] = (byte) (i & 0xFF);
+        return result;
+    }
+
+    public static long byte2ui32(byte[] bytes) {
+        long value = 0;
+        for (int i = 0; i < 4; i++) {
+            int shift = i * 8;
+            value += (bytes[i] & 0xFF) << shift;
+        }
+        return value;
+    }
+
+    public static byte[] i82Byte(int i) {
+        return ui82Byte(i);
+    }
+
+    public static int byte2i8(byte[] bytes) {
+        if ((bytes[0] & 0x80) == 0x80)
+            return bytes[0] | 0xFFFFFF80;
+        else
+            return bytes[0] & 0xFF;
+    }
+
+    public static byte[] i162Byte(int i) {
+        return ui162Byte(i);
+    }
+
+    public static int byte2i16(byte[] bytes) {
+        int value;
+        if ((bytes[1] & 0x80) == 0x80)
+            value = 0xFFFF0000 | (bytes[0] & 0xFF) | ((bytes[1] | 0x80) << 8);
+        else
+            value = (bytes[0] & 0xFF) | ((bytes[1] & 0xFF) << 8);
+        Log.d("TEST", byte2Hex(bytes) + "@@" + value);
         return value;
     }
 
@@ -120,13 +164,19 @@ public class byteCov {
             case 0:
             case 1:
             case 5:
-                return (float) byte2i8(data);
+                return (float) byte2ui8(data);
             case 2:
-                return (float) byte2i16(data);
+                return (float) byte2ui16(data);
             case 3:
-                return (float) byte2i32(data);
+                return (float) byte2ui32(data);
             case 4:
                 return byte2Fl(data);
+            case 6:
+                return (float) byte2i8(data);
+            case 7:
+                return (float) byte2i16(data);
+            case 8:
+                return (float) byte2i32(data);
         }
         return 0.0f;
     }

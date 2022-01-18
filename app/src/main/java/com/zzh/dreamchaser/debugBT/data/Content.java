@@ -78,11 +78,14 @@ public class Content {
             case 0:
             case 1:
             case 5:
+            case 6:
                 return 1;
             case 2:
+            case 7:
                 return 2;
             case 3:
             case 4:
+            case 8:
                 return 4;
         }
         return 0;

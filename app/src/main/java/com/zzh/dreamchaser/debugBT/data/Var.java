@@ -14,9 +14,12 @@ public class Var {
 //    uInt16 = 2,
 //    uInt32 = 3,
 //    Float = 4,
-//    Char = 5
+//    Char = 5,
+//    Int8 = 6,
+//    Int16 = 7,
+//    Int32 = 8
 
-    final public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char"};
+    final public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char", "Int8", "Int16", "Int32"};
     public int type;
     public String tag;
     public byte[] data = i82Byte(0);
@@ -43,8 +46,8 @@ public class Var {
 
     public void setData(byte[] data) {
         this.data = data;
-        history.add(getFloat4All(type,data));
-        if(history.size()> SimpleScopeView.MAX_REX)
+        history.add(getFloat4All(type, data));
+        if (history.size() > SimpleScopeView.MAX_REX)
             history.remove(0);
     }
 
@@ -66,17 +69,23 @@ public class Var {
                 case 0:
                     return byte2Hex(data);
                 case 1:
-                    return byte2i8(data) + "";
+                    return byte2ui8(data) + "";
                 case 2:
-                    return byte2i16(data) + "";
+                    return byte2ui16(data) + "";
                 case 3:
-                    return byte2i32(data) + "";
+                    return byte2ui32(data) + "";
                 case 4:
                     return byte2Fl(data) + "";
                 case 5:
                     return new String(data);
+                case 6:
+                    return byte2i8(data) + "";
+                case 7:
+                    return byte2i16(data) + "";
+                case 8:
+                    return byte2i32(data) + "";
             }
-        }catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
         return null;

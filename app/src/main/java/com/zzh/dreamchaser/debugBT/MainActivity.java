@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
         initPermissions();
         mBLESPPUtils = new BLESPPUtils(MainActivity.this, this);
-//        setEnableLogOut();
+        setEnableLogOut();
 //        mBLESPPUtils.setStopFlag("@\r\n".getBytes());
         if (!mBLESPPUtils.isBluetoothEnable()) mBLESPPUtils.enableBluetooth();
         mBLESPPUtils.onCreate();
