@@ -126,7 +126,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="超级电容调压"
+                android:text="自瞄偏置"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -144,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
-                    android:text="24"
+                    android:text="0.0"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
 
@@ -155,7 +155,26 @@
                     android:layout_marginTop="10dp"
                     android:indeterminate="false"
                     android:max="1000"
-                    android:progress="737" />
+                    android:progress="500" />
+
+                <TextView
+                    android:id="@+id/seekbarText6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:text="0.0"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seekBar6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:indeterminate="false"
+                    android:max="1000"
+                    android:progress="500" />
 
             </LinearLayout>
 

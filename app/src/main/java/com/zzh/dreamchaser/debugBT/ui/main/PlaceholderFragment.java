@@ -279,17 +279,20 @@ public class PlaceholderFragment extends Fragment {
 
                 final SeekBar seekBar5 = binding2.seekBar5;
                 final TextView seekbarText5 = binding2.seekbarText5;
+                final SeekBar seekBar6 = binding2.seekBar6;
+                final TextView seekbarText6 = binding2.seekbarText6;
 
                 SeekBar.OnSeekBarChangeListener listener2 = new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (seekBar == seekBar5) {
-                            seekbarText5.setText((10 + 19 * (float) seekBar5.getProgress() / 1000) + "");
-                        }
-                        byte[] temp = new byte[5];
-                        temp[0] = (byte) 0xa1;
-                        System.arraycopy(fl2Byte(10 + 19 * (float) seekBar5.getProgress() / 1000), 0, temp, 1, 4);
-                        logD("Supercap:-->" + byte2Hex(temp));
+                        seekbarText5.setText((0 + 12 * ((float) seekBar5.getProgress() - 500) / 1000) + "");
+                        seekbarText6.setText((0 + 2 * ((float) seekBar6.getProgress() - 500) / 1000) + "");
+
+                        byte[] temp = new byte[9];
+                        temp[0] = (byte) 0xb1;
+                        System.arraycopy(fl2Byte(0 + 12 * ((float) seekBar5.getProgress() - 500) / 1000), 0, temp, 1, 4);
+                        System.arraycopy(fl2Byte(0 + 2 * ((float) seekBar6.getProgress() - 500) / 1000), 0, temp, 5, 4);
+                        logD("Offset:-->" + byte2Hex(temp));
                         DeviceList.targetDevices.get(0).sendData(temp);
                     }
 
@@ -302,6 +305,7 @@ public class PlaceholderFragment extends Fragment {
                     }
                 };
                 seekBar5.setOnSeekBarChangeListener(listener2);
+                seekBar6.setOnSeekBarChangeListener(listener2);
 
                 final SeekBar seekBar13 = binding2.seekBar13;
                 final TextView seekbarText13 = binding2.seekbarText13;
