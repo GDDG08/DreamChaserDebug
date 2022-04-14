@@ -195,7 +195,7 @@ public class VersionControl {
     private void userUpdate() {
         new AlertDialog.Builder(mainActivity)
                 .setTitle("请选择下载方式")
-                .setMessage("校外访问需要您先登陆webvpn后\n再次返回本软件点击更新")
+                .setMessage(cvb.getDownMsg())
                 .setCancelable(true)
                 .setPositiveButton("校园网访问", (view, which2) -> {
                     mainActivity.web(cvb.getBitlink());

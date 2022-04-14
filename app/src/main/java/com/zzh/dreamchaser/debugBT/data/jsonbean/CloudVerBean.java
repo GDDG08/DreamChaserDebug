@@ -22,6 +22,8 @@ public class CloudVerBean {
 
     private String bitlink;
 
+    private String downMsg;
+
     public void setCheckUpdate(int checkUpdate){
         this.checkUpdate = checkUpdate;
     }
@@ -75,6 +77,13 @@ public class CloudVerBean {
     }
     public String getBitlink(){
         return this.bitlink;
+    }
+
+    public void setDownMsg(String downMsg){
+        this.downMsg = downMsg;
+    }
+    public String getDownMsg(){
+        return this.downMsg;
     }
 }
 
