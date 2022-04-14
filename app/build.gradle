@@ -11,8 +11,8 @@ android {
         minSdkVersion 26
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
-        versionCode 22041301
-        versionName "2.1.0-Alpha"
+        versionCode 22041412
+        versionName "2.2.0-Alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,4 +44,6 @@ dependencies {
     implementation 'com.github.smarxpan:NotchScreenTool:+'
 //    implementation 'com.github.lecho:hellocharts-android:+'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'org.xutils:xutils:3.9.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
 }

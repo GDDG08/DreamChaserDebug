@@ -1,9 +1,11 @@
 package com.zzh.dreamchaser.debugBT.view;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -11,16 +13,21 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.zzh.dreamchaser.debugBT.MainActivity;
 import com.zzh.dreamchaser.debugBT.R;
 import com.zzh.dreamchaser.debugBT.connect.BLESPPUtils;
+import com.zzh.dreamchaser.debugBT.connect.BluetoothDev;
+import com.zzh.dreamchaser.debugBT.connect.DeviceList;
 
 import java.util.ArrayList;
 
-public class DeviceDialog{
+import static android.content.Context.MODE_PRIVATE;
+
+public class DeviceDialog {
     private LinearLayout mDialogRootView;
     private ProgressBar mProgressBar;
     private AlertDialog mConnectDeviceDialog;
@@ -28,6 +35,16 @@ public class DeviceDialog{
     private Activity mContext;
     private BLESPPUtils mBLESPPUtils;
 
+    private View.OnClickListener savedDevListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            BluetoothDev device = (BluetoothDev) v.getTag();
+            Toast.makeText(mContext,"开始连接:" +device.getName(),Toast.LENGTH_SHORT ).show();
+//                mLogTv.setText(mLogTv.getText() + "\n" + "开始连接:" + clickDevice.getName());
+//                mBLESPPUtils.connect(clickDevice);
+            DeviceList.connect(mContext, device.getAddress());
+        }
+    };
 
     public DeviceDialog(Activity context, BLESPPUtils mBLESPPUtils) {
         this.mContext = context;
@@ -66,6 +83,8 @@ public class DeviceDialog{
         mConnectDeviceDialog.setTitle("选择RoboMaster调试器");
         mConnectDeviceDialog.setView(scrollView);
         mConnectDeviceDialog.setCancelable(true);
+
+        initSavedDevcs(savedDevListener);
     }
 
     /**
@@ -88,6 +107,7 @@ public class DeviceDialog{
 //                    mProgressBar.setProgress(50,true);
             mProgressBar.setIndeterminate(true);
             mDialogRootView.addView(mProgressBar);
+            initSavedDevcs(savedDevListener);
             MainActivity.mDevicesList.clear();
             mBLESPPUtils.startDiscovery();
         });
@@ -123,5 +143,33 @@ public class DeviceDialog{
                     20, 20, 20, 20);
             mDialogRootView.addView(devTag);
         });
+    }
+
+    private void initSavedDevcs(final View.OnClickListener onClickListener) {
+        SharedPreferences info = mContext.getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
+        String dev_name = info.getString("devLast_name", null);
+        String dev_addr = info.getString("devLast_addr", null);
+
+        if (dev_addr != null) {
+            mContext.runOnUiThread(() -> {
+                TextView devTag = new TextView(mContext);
+                devTag.setClickable(true);
+                devTag.setPadding(20, 20, 20, 20);
+                devTag.setBackgroundResource(R.drawable.rect_round_button_ripple_orange);
+                devTag.setText("上次连接：\n"+ dev_name+ "\nMAC:" +dev_addr);
+                devTag.setTextColor(Color.WHITE);
+                devTag.setOnClickListener(onClickListener);
+                devTag.setTag(new BluetoothDev(dev_name,dev_addr));
+                devTag.setLayoutParams(
+                        new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                );
+                ((LinearLayout.LayoutParams) devTag.getLayoutParams()).setMargins(
+                        20, 20, 20, 20);
+                mDialogRootView.addView(devTag);
+            });
+        }
     }
 }

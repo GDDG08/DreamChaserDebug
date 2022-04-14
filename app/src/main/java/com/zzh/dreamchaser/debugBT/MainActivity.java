@@ -35,6 +35,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static com.zzh.dreamchaser.debugBT.GDDGApplication.verCtrl;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 import static com.zzh.dreamchaser.debugBT.tool.myLog.setEnableLogOut;
@@ -50,6 +51,7 @@ import com.zzh.dreamchaser.debugBT.data.Content;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
 import com.zzh.dreamchaser.debugBT.tool.FileUtils;
+import com.zzh.dreamchaser.debugBT.tool.VersionControl;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
 import com.zzh.dreamchaser.debugBT.ui.main.SectionsPagerAdapter;
 import com.zzh.dreamchaser.debugBT.databinding.ActivityMainBinding;
@@ -165,6 +167,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         mBLESPPUtils.onCreate();
         mDeviceDialogCtrl = new DeviceDialog(this, mBLESPPUtils);
         DeviceList.setOnBluetoothAction(this);
+
+        verCtrl.setMainActivity(this);
+//        verCtrl.check();
     }
 
     private void initPermissions() {
@@ -228,6 +233,11 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
         logD("DOUBLE"+ "连接成功" + device.getName() + device.getAddress());
         postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!", () -> {
 //            mDeviceDialogCtrl.dismiss();
+            SharedPreferences.Editor info_edit = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE).edit();
+            info_edit.putString("devLast_addr", device.getAddress());
+            info_edit.putString("devLast_name", device.getName());
+            info_edit.apply();
+
         });
     }
 
@@ -319,6 +329,15 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             }
         }
     }
+
+    public void web(String url) {
+        Intent intent= new Intent();
+        intent.setAction("android.intent.action.VIEW");
+        Uri content_url = Uri.parse(url);
+        intent.setData(content_url);
+        startActivity(intent);
+    }
+
 
     private static Boolean isExit = false;
 

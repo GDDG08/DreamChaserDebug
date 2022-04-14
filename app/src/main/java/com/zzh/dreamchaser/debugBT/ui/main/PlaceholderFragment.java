@@ -37,6 +37,7 @@ import com.zzh.dreamchaser.debugBT.view.MyScrollView;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.zzh.dreamchaser.debugBT.GDDGApplication.verCtrl;
 import static com.zzh.dreamchaser.debugBT.MainActivity.mLogger;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
@@ -229,8 +230,9 @@ public class PlaceholderFragment extends Fragment {
                 root = binding2.getRoot();
 
                 binding2.button2.setOnClickListener((v) -> {
-                    Intent i = new Intent(getActivity(), CustomActivity.class);
-                    startActivity(i);
+//                    Intent i = new Intent(getActivity(), CustomActivity.class);
+//                    startActivity(i);
+                    verCtrl.getSeverVer();
                 });
                 final SeekBar seekBar1 = binding2.seekBar1;
                 final SeekBar seekBar2 = binding2.seekBar2;
