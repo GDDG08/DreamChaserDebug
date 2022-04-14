@@ -97,7 +97,10 @@ public class VersionControl {
     public void check() {
         logD("UPDATE--->" + "verCode:" + cvb.getVerCode());
 
+        if (cvb.getCheckUpdate() == -1)
+            return;
         if (cvb.getVerCode() <= getVersionCode()) {
+            if (cvb.getCheckUpdate() > 0)
             Toast.makeText(mainActivity, "已是最新版本", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(mainActivity, "检测到新版本", Toast.LENGTH_SHORT).show();
@@ -117,9 +120,9 @@ public class VersionControl {
                     .setCancelable(force_cancelable)
                     .setPositiveButton("立即更新", (dialog, which) -> {
 //                        if (cvb.getType() == 0) {
-                            userUpdate();
-                            if (cvb.getForceUpdate())
-                                mainActivity.finish();
+                        userUpdate();
+                        if (cvb.getForceUpdate())
+                            mainActivity.finish();
 //                        }else{
 //                            final String filePath = mContext.getCacheDir().getPath() + "/DreamChaser.apk";
 //
@@ -189,15 +192,15 @@ public class VersionControl {
         }
     }
 
-    private void userUpdate(){
+    private void userUpdate() {
         new AlertDialog.Builder(mainActivity)
                 .setTitle("请选择下载方式")
                 .setMessage("校外访问需要您先登陆webvpn后\n再次返回本软件点击更新")
                 .setCancelable(true)
-                .setPositiveButton("校园网访问",(view,which2)->{
+                .setPositiveButton("校园网访问", (view, which2) -> {
                     mainActivity.web(cvb.getBitlink());
                 })
-                .setNegativeButton("校外访问",(view,which2)->{
+                .setNegativeButton("校外访问", (view, which2) -> {
                     mainActivity.web(cvb.getWeblink());
                 }).show();
 //        mainActivity.web(cvb.getDirectlink());
