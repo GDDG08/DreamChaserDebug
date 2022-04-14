@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             public void onClick(View view) {
                 PlaceholderFragment.switch2.setChecked(false);
                 mDeviceDialogCtrl.show();
+                checkGPS();
             }
         });
 
@@ -170,6 +172,15 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
         verCtrl.setMainActivity(this);
 //        verCtrl.check();
+    }
+
+    public void checkGPS() {
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        boolean enable = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!enable) {
+            Toast.makeText(getApplicationContext(), "没开定位服务！\n搜不到设备哟~", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initPermissions() {
@@ -230,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onConnectSuccess(BluetoothDevice device, BluetoothSocket socket) {
-        logD("DOUBLE"+ "连接成功" + device.getName() + device.getAddress());
+        logD("DOUBLE" + "连接成功" + device.getName() + device.getAddress());
         postShowToast(device.getName() + "(" + device.getAddress() + ")\n连接成功!", () -> {
 //            mDeviceDialogCtrl.dismiss();
             SharedPreferences.Editor info_edit = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE).edit();
@@ -331,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     }
 
     public void web(String url) {
-        Intent intent= new Intent();
+        Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);
         intent.setData(content_url);

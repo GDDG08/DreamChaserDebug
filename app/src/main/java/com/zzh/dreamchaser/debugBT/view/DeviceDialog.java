@@ -32,7 +32,7 @@ public class DeviceDialog {
     private ProgressBar mProgressBar;
     private AlertDialog mConnectDeviceDialog;
 
-    private Activity mContext;
+    private MainActivity mContext;
     private BLESPPUtils mBLESPPUtils;
 
     private View.OnClickListener savedDevListener = new View.OnClickListener() {
@@ -46,7 +46,7 @@ public class DeviceDialog {
         }
     };
 
-    public DeviceDialog(Activity context, BLESPPUtils mBLESPPUtils) {
+    public DeviceDialog(MainActivity context, BLESPPUtils mBLESPPUtils) {
         this.mContext = context;
         this.mBLESPPUtils = mBLESPPUtils;
         // 搜索进度条
@@ -110,6 +110,7 @@ public class DeviceDialog {
             initSavedDevcs(savedDevListener);
             MainActivity.mDevicesList.clear();
             mBLESPPUtils.startDiscovery();
+            mContext.checkGPS();
         });
     }
 
