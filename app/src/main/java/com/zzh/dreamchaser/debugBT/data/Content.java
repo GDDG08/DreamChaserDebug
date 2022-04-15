@@ -64,10 +64,10 @@ public class Content {
 //        dataLen = list.size();
     }
 
-    public void Update(byte[] data) {
+    public boolean Update(byte[] data) {
         if (data.length != byteLen+1){
             logD("ERROR:" + "decode data len: " + data.length + ", exp: " + byteLen);
-            return;
+            return false;
         }
         int cur_pos = 1;//first as device id
         for (int i = 0; i < list.size(); i++) {
@@ -78,6 +78,7 @@ public class Content {
             cur_pos += len;
             logD("RESULT:" + ((Var) list.get(i)).getTag() + "-->" + ((Var) list.get(i)).getStr());
         }
+        return true;
     }
 
     private int getDataLen(int type) {
