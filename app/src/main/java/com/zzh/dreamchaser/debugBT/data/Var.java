@@ -22,7 +22,7 @@ public class Var {
     final public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char", "Int8", "Int16", "Int32"};
     public int type;
     public String tag;
-    public byte[] data = i82Byte(0);
+    public byte[] data = i322Byte(0);
     public List<Float> history = new ArrayList<>();
 
     public Var(int ty, String ta) {

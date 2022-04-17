@@ -15,10 +15,15 @@ public class RecvTask implements Runnable {
     boolean isRunning = false;
     byte[] startFlag = {(byte) 0xfa, (byte) 0xfa, (byte) 0xfa};
     byte[] stopFlag = "@\r\n".getBytes();
+    private int byteLen = 0;
 
     public RecvTask(BluetoothSocket bluetoothSocket, BLESPPUtils.OnDeviceRecvAction onDeviceRecvAction) {
         this.bluetoothSocket = bluetoothSocket;
         this.onDeviceRecvAction = onDeviceRecvAction;
+    }
+
+    public void setByteLen(int byteLen) {
+        this.byteLen = byteLen;
     }
 
     @Override
@@ -28,6 +33,8 @@ public class RecvTask implements Runnable {
         // 开始监听数据接收
         try {
             InputStream inputStream = bluetoothSocket.getInputStream();
+            int startFlagSize = startFlag.length;
+            int stopFlagSize = stopFlag.length;
             byte[] result = new byte[0];
             int begin_pos = 0;
             while (isRunning) {
@@ -55,18 +62,21 @@ public class RecvTask implements Runnable {
                 try {
                     // 返回数据
                     logD("当前累计收到的数据=>" + byte2Hex(result));
-                    int startFlagSize = startFlag.length;
-                    int stopFlagSize = stopFlag.length;
+
                     boolean shouldCallOnReceiveBytes = false;
 //                    logD("标志位为：" + byte2Hex(stopFlag));
 
 
                     while (true) {
                         int start = findFlag(begin_pos, result, startFlag, result.length, startFlagSize);
-                        int end = findFlag(begin_pos, result, stopFlag, result.length, stopFlagSize);
+                        if (start==-1) {
+                            logD("数据包搜寻:Start->" + start + ", End->break" );
+                            break;
+                        }
+                        int end = findFlag(start + byteLen + startFlagSize + 1, result, stopFlag, result.length, stopFlagSize);
                         logD("数据包搜寻:Start->" + start + ", End->" + end);
 
-                        if (start == -1 || end == -1) {
+                        if (end == -1) {
                             break;
                         } else if (end <= start) {
                             begin_pos = start;

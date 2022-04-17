@@ -76,6 +76,7 @@ public class DeviceHandle {
                     handShake.stop();
                     mContent = new Content(false);
                     mContent.CreatContent(bytes);
+                    recvTask.setByteLen(mContent.byteLen);
                     if (!hasUI)
                         onCreateUI();
                     //Todo: start logging

@@ -115,16 +115,17 @@ public class Logger {
     }
 
     public void writeHeader() {
-        try {
-            for (DeviceHandle dh : DeviceList.targetDevices)
-                if (dh.mContent != null)
-                    for (int i = 0; i < dh.mContent.dataLen; i++) {
-                        bw.write(dh.deviceName+"-"+dh.mContent.tagList.get(i) + ",");
-                    }
-            bw.write("\r\n");
-            bw.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (onLogging)
+            try {
+                for (DeviceHandle dh : DeviceList.targetDevices)
+                    if (dh.mContent != null)
+                        for (int i = 0; i < dh.mContent.dataLen; i++) {
+                            bw.write(dh.deviceName + "-" + dh.mContent.tagList.get(i) + ",");
+                        }
+                bw.write("\r\n");
+                bw.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 }

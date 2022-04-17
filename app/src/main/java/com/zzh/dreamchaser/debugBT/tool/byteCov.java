@@ -153,7 +153,10 @@ public class byteCov {
                 if (cnt == flagSize)
                     return i + 1 - flagSize;
             } else {
-                cnt = 0;
+                if (cnt > 0) {
+                    cnt = 0;
+                    i--;
+                }
             }
         }
         return -1;
