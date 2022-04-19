@@ -2,6 +2,7 @@ package com.zzh.dreamchaser.debugBT.data;
 
 import com.zzh.dreamchaser.debugBT.view.SimpleScopeView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,8 @@ public class Var {
                 case 3:
                     return byte2ui32(data) + "";
                 case 4:
-                    return byte2Fl(data) + "";
+                    float fl = byte2Fl(data);
+                    return new DecimalFormat("0.00").format(fl);
                 case 5:
                     return new String(data);
                 case 6:
