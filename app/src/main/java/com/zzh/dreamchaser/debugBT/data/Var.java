@@ -77,7 +77,7 @@ public class Var {
                     return byte2ui32(data) + "";
                 case 4:
                     float fl = byte2Fl(data);
-                    return new DecimalFormat("0.00").format(fl);
+                    return new DecimalFormat("0.000").format(fl);
                 case 5:
                     return new String(data);
                 case 6:
