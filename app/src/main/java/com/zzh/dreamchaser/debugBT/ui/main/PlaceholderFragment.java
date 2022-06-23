@@ -288,12 +288,12 @@ public class PlaceholderFragment extends Fragment {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         seekbarText5.setText((0 + 12 * ((float) seekBar5.getProgress() - 500) / 1000) + "");
-                        seekbarText6.setText((0 + 2 * ((float) seekBar6.getProgress() - 500) / 1000) + "");
+                        seekbarText6.setText((0 + 5 * ((float) seekBar6.getProgress() - 500) / 1000) + "");
 
                         byte[] temp = new byte[9];
                         temp[0] = (byte) 0xb1;
                         System.arraycopy(fl2Byte(0 + 12 * ((float) seekBar5.getProgress() - 500) / 1000), 0, temp, 1, 4);
-                        System.arraycopy(fl2Byte(0 + 2 * ((float) seekBar6.getProgress() - 500) / 1000), 0, temp, 5, 4);
+                        System.arraycopy(fl2Byte(0 + 5 * ((float) seekBar6.getProgress() - 500) / 1000), 0, temp, 5, 4);
                         logD("Offset:-->" + byte2Hex(temp));
                         DeviceList.targetDevices.get(0).sendData(temp);
                     }
