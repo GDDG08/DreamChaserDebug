@@ -87,9 +87,11 @@ public class DeviceHandle {
                 case (byte) 0x01:
                 case (byte) 0x02:
                 case (byte) 0x03:
+                case (byte) 0xc8:
+                default:
                     if (hasUI)
                         updateSucc = mContent.Update(bytes);
-                default:
+
                     if (updateSucc)
                         onBluetoothAction.onReceiveBytes(id, bytes);
                     break;

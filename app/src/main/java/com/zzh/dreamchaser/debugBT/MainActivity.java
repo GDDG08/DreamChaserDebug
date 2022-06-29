@@ -51,6 +51,8 @@ import com.zzh.dreamchaser.debugBT.connect.DeviceList;
 import com.zzh.dreamchaser.debugBT.data.Content;
 //import com.zzh.dreamchaser.debugBT.data.ContentUpdate;
 import com.zzh.dreamchaser.debugBT.data.Logger;
+import com.zzh.dreamchaser.debugBT.hardware.InnerSensor;
+import com.zzh.dreamchaser.debugBT.hardware.MetaCTRLer;
 import com.zzh.dreamchaser.debugBT.tool.FileUtils;
 import com.zzh.dreamchaser.debugBT.tool.VersionControl;
 import com.zzh.dreamchaser.debugBT.ui.main.PlaceholderFragment;
@@ -87,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     static {
         mLogger = new Logger();
     }
+
+    public static InnerSensor mInnerSensor;
+    public static MetaCTRLer mMetaCTRLer;
 
 //    @SuppressLint("HandlerLeak")
 //    private Handler handler = new Handler() {
@@ -172,6 +177,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
         verCtrl.setMainActivity(this);
 //        verCtrl.check();
+
+        mInnerSensor = new InnerSensor(this);
+        mMetaCTRLer = new MetaCTRLer(this);
     }
 
     public void checkGPS() {
@@ -274,11 +282,13 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
     @Override
     public void onReceiveBytes(int id, byte[] bytes) {
 
-        logD("Receiving1----->设备" + id + ":" + new String(bytes));
+        logD("Receiving1----->设备" + id );
         switch (bytes[0]) {
             case (byte) 0xff:
-
                 break;
+
+            case (byte) 0xc8:
+                mMetaCTRLer.onIMUChanged(DeviceList.getDeviceHandle(id).mContent);
             case (byte) 0x01:
             case (byte) 0x02:
             case (byte) 0x03:
@@ -287,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 //                Message msg = new Message();
 //                msg.what = id;
 //                handler.sendMessage(msg);
-                DeviceList.targetDevices.get(id).onUIUpdate();
+                DeviceList.getDeviceHandle(id).onUIUpdate();
 
                 break;
         }
@@ -392,6 +402,8 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                     dh.dAdapter.setOnScope(false, false);
                     dh.dAdapter.pauseShow = true;
                 }
+
+        mInnerSensor.Pause();
     }
 
     @Override
@@ -403,5 +415,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                     dh.dAdapter.setOnScope(true, false);
                     dh.dAdapter.pauseShow = false;
                 }
+
+        mInnerSensor.Resume();
     }
 }

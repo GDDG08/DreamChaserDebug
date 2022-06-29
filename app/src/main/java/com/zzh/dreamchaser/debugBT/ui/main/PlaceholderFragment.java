@@ -38,7 +38,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.zzh.dreamchaser.debugBT.GDDGApplication.verCtrl;
+import static com.zzh.dreamchaser.debugBT.MainActivity.mInnerSensor;
 import static com.zzh.dreamchaser.debugBT.MainActivity.mLogger;
+import static com.zzh.dreamchaser.debugBT.MainActivity.mMetaCTRLer;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 
@@ -229,10 +231,15 @@ public class PlaceholderFragment extends Fragment {
                 binding2 = Fragment2Binding.inflate(inflater, container, false);
                 root = binding2.getRoot();
 
+                switch_sensor = binding2.switchSensor;
+                switch_imu = binding2.switchImu;
+
                 binding2.button2.setOnClickListener((v) -> {
 //                    Intent i = new Intent(getActivity(), CustomActivity.class);
 //                    startActivity(i);
-                    verCtrl.getSeverVer();
+//                    verCtrl.getSeverVer();
+                    mInnerSensor.refreshOffset();
+                    mMetaCTRLer.refreshOffset();
                 });
                 final SeekBar seekBar1 = binding2.seekBar1;
                 final SeekBar seekBar2 = binding2.seekBar2;
@@ -439,5 +446,52 @@ public class PlaceholderFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    static Switch switch_sensor;
+    static boolean sensor_first = true;
+
+
+    public static void onSensorUpdate(float[] orientaion) {
+        if (switch_sensor.isChecked()) {
+            if (sensor_first == true) {
+                mInnerSensor.refreshOffset();
+                sensor_first = false;
+            }
+            GimbalCTRL(orientaion);
+            return;
+        } else {
+            sensor_first = true;
+        }
+    }
+
+    static Switch switch_imu;
+    static boolean imu_first = true;
+
+    public static void onIMUUpdate(float[] orientaion) {
+        binding2.seekbarText1.setText("x:" + orientaion[0] + ", y:" + orientaion[1] + ", z:" + orientaion[2]);
+        if (switch_imu.isChecked()) {
+            if (imu_first == true) {
+                mMetaCTRLer.refreshOffset();
+                imu_first = false;
+            }
+            GimbalCTRL(orientaion);
+        } else {
+            imu_first = true;
+        }
+    }
+
+    private static void GimbalCTRL(float[] orientaion) {
+        byte[] temp = new byte[9];
+        temp[0] = (byte) 0xb6;
+        System.arraycopy(fl2Byte(orientaion[0]), 0, temp, 1, 4);
+        System.arraycopy(fl2Byte(orientaion[1]), 0, temp, 5, 4);
+        logD("CMD_SET_GIMBAL_ANGLE:-->" + byte2Hex(temp));
+        try {
+            DeviceList.getDeviceHandle(0).sendData(temp);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

@@ -26,6 +26,22 @@
                 android:layout_height="wrap_content"
                 android:text="Button" />
 
+            <Switch
+                android:id="@+id/switch_sensor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:text="Sensor"
+                android:textColor="#FFFFFF" />
+
+            <Switch
+                android:id="@+id/switch_imu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:text="MetaCTRL"
+                android:textColor="#FFFFFF" />
+
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
@@ -46,10 +62,10 @@
 
                 <TextView
                     android:id="@+id/seekbarText1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginTop="20dp"
+                    android:gravity="center"
                     android:text="0"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
