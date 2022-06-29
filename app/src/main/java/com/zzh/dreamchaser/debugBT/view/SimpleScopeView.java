@@ -89,7 +89,7 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
     public void onSurfaceTextureUpdated(SurfaceTexture arg0) {
     }
 
-    public void setContent(Content content){
+    public void setContent(Content content) {
         mContent = content;
     }
 
@@ -171,10 +171,15 @@ public class SimpleScopeView extends TextureView implements TextureView.SurfaceT
         min = Float.POSITIVE_INFINITY;
         max = Float.NEGATIVE_INFINITY;
 
+
         for (int i = 0; i < REX; i++) {
-            float f = history.get(history.size() - REX + i);
-            min = Float.min(f, min);
-            max = Float.max(f, max);
+            int index = history.size() - REX + i;
+            float f = 0;
+            if (index >= 0) {
+                f = history.get(history.size() - REX + i);
+                min = Float.min(f, min);
+                max = Float.max(f, max);
+            }
             res.add(f);
         }
         range = 1.0f;

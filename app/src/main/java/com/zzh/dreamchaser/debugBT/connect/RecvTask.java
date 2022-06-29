@@ -61,7 +61,7 @@ public class RecvTask implements Runnable {
                 }
                 try {
                     // 返回数据
-                    logD("当前累计收到的数据=>" + byte2Hex(result));
+//                    logD("当前累计收到的数据=>" + byte2Hex(result));
 
                     boolean shouldCallOnReceiveBytes = false;
 //                    logD("标志位为：" + byte2Hex(stopFlag));
@@ -70,11 +70,11 @@ public class RecvTask implements Runnable {
                     while (true) {
                         int start = findFlag(begin_pos, result, startFlag, result.length, startFlagSize);
                         if (start==-1) {
-                            logD("数据包搜寻:Start->" + start + ", End->break" );
+//                            logD("数据包搜寻:Start->" + start + ", End->break" );
                             break;
                         }
                         int end = findFlag(start + byteLen + startFlagSize + 1, result, stopFlag, result.length, stopFlagSize);
-                        logD("数据包搜寻:Start->" + start + ", End->" + end);
+//                        logD("数据包搜寻:Start->" + start + ", End->" + end);
 
                         if (end == -1) {
                             break;

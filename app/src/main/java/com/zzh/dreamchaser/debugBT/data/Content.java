@@ -10,6 +10,9 @@ import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 import static com.zzh.dreamchaser.debugBT.tool.myLog.logD;
 
 public class Content {
+
+    final public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char", "Int8", "Int16", "Int32"};
+
     public ArrayList tagList = new ArrayList();
     public ArrayList list = new ArrayList();
     public int dataLen = 0;

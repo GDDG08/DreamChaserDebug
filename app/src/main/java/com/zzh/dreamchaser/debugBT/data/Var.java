@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.zzh.dreamchaser.debugBT.data.Content.typeLi;
 import static com.zzh.dreamchaser.debugBT.tool.byteCov.*;
 
 public class Var {
@@ -20,7 +21,6 @@ public class Var {
 //    Int16 = 7,
 //    Int32 = 8
 
-    final public static String typeLi[] = {"BYTE", "uInt8", "uInt16", "uInt32", "Float", "Char", "Int8", "Int16", "Int32"};
     public int type;
     public String tag;
     public byte[] data = i322Byte(0);

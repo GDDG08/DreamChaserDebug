@@ -182,7 +182,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     }
 
     public void onUpDate() {
-        logD("onHold" + onHold + "");
+//        logD("onHold" + onHold + "");
         if (!onHold) {
             if (onScope) {
                 for (int i = 0; i < deviceHandle.mContent.dataLen; i++) {
